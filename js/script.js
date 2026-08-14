@@ -18,25 +18,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Render header based on current session
     renderDynamicNavigation();
 
-    // 5. Initialize specific page logic
-    const currentPage = window.location.pathname.split('/').pop();
-    
-    if (currentPage === 'login.html') {
+    // 5. Initialize specific page logic with resilient DOM & URL matching
+    const rawPath = window.location.pathname.toLowerCase();
+    const pageName = rawPath.split('/').pop().replace('.html', '') || 'index';
+
+    // A. Login Page
+    if (pageName === 'login' || document.getElementById('userLoginForm') || document.getElementById('adminLoginForm')) {
         initLoginTabs();
         initLoginLogic();
-    } else if (currentPage === 'register.html') {
+    }
+    // B. Register Page
+    if (pageName === 'register' || document.getElementById('registerForm')) {
         initRegisterLogic();
-    } else if (currentPage === 'dashboard.html') {
+    }
+    // C. Senior Citizen Dashboard
+    if (pageName === 'dashboard' || document.getElementById('profileEditForm')) {
         initUserDashboardLogic();
-    } else if (currentPage === 'request_help.html') {
+    }
+    // D. Help Request Form
+    if (pageName === 'request_help' || document.getElementById('helpRequestForm')) {
         initRequestHelpLogic();
-    } else if (currentPage === 'contact.html') {
+    }
+    // E. Contact Page
+    if (pageName === 'contact' || document.getElementById('contactForm')) {
         initContactLogic();
-    } else if (currentPage === 'admin_dashboard.html') {
+    }
+    // F. Admin Dashboard
+    if (pageName === 'admin_dashboard' || pageName === 'admin' || document.getElementById('metric_total_seniors')) {
         initAdminDashboardLogic();
-    } else if (currentPage === 'admin_users.html') {
+    }
+    // G. Admin Users
+    if (pageName === 'admin_users' || document.getElementById('adminUsersTableBody') || document.getElementById('admin_user_search')) {
         initAdminUsersLogic();
-    } else if (currentPage === 'admin_requests.html') {
+    }
+    // H. Admin Requests
+    if (pageName === 'admin_requests' || document.getElementById('adminRequestsTableBody') || document.getElementById('admin_request_search')) {
         initAdminRequestsLogic();
     }
 });
@@ -327,14 +343,32 @@ function showToast(message, type = 'info') {
 function initLoginTabs() {
     const tabs = document.querySelectorAll('.login-tabs .tab-btn');
     const contents = document.querySelectorAll('.tab-content');
+    if (!tabs.length) return;
+
     tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetTabId = tab.dataset.tab;
             tabs.forEach(t => t.classList.remove('active'));
             contents.forEach(c => c.classList.remove('active'));
             tab.classList.add('active');
-            document.getElementById(tab.dataset.tab).classList.add('active');
+            const targetEl = document.getElementById(targetTabId);
+            if (targetEl) targetEl.classList.add('active');
         });
     });
+
+    // Support URL query parameter ?tab=admin or hash #admin
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'admin' || window.location.hash === '#admin') {
+        const adminTab = document.querySelector('.login-tabs .tab-btn[data-tab="adminLogin"]');
+        if (adminTab) {
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            adminTab.classList.add('active');
+            const adminEl = document.getElementById('adminLogin');
+            if (adminEl) adminEl.classList.add('active');
+        }
+    }
 }
 
 function initLoginLogic() {
@@ -358,7 +392,10 @@ function initLoginLogic() {
 
             if (matchedUser) {
                 startSession(matchedUser, 'user');
-                window.location.href = 'dashboard.html';
+                showToast(`Namaste ${matchedUser.full_name}! Logging in...`, "success");
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 400);
             } else {
                 showToast("Invalid credentials. Try: ramesh@email.com / password123", "error");
             }
@@ -370,15 +407,22 @@ function initLoginLogic() {
     if (adminForm) {
         adminForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const username = document.getElementById('adm_username').value.trim();
-            const password = document.getElementById('adm_password').value;
+            const usernameInput = document.getElementById('adm_username');
+            const passwordInput = document.getElementById('adm_password');
+            if (!usernameInput || !passwordInput) return;
 
-            if (username === 'admin' && password === 'adminpassword123') {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            if (username.toLowerCase() === 'admin' && password === 'adminpassword123') {
                 const adminUser = { full_name: "Desk Administrator", username: "admin" };
                 startSession(adminUser, 'admin');
-                window.location.href = 'admin_dashboard.html';
+                showToast("Admin login successful! Redirecting to Admin Desk...", "success");
+                setTimeout(() => {
+                    window.location.href = 'admin_dashboard.html';
+                }, 400);
             } else {
-                showToast("Invalid admin username or password (admin / adminpassword123).", "error");
+                showToast("Invalid admin credentials! Demo Username: admin / Password: adminpassword123", "error");
             }
         });
     }
