@@ -518,24 +518,33 @@ function initUserDashboardLogic() {
 
     // Bind profile values
     document.querySelectorAll('.profile-name').forEach(el => el.textContent = session.name);
-    const ageEl = document.getElementById('prof_age_badge');
+    
+    const ageEl = document.getElementById('prof_age_badge') || document.querySelector('.profile-age');
     if (ageEl) ageEl.textContent = `Senior Citizen | Age: ${session.age}`;
 
     const emailSpan = document.getElementById('prof_email_span');
     if (emailSpan) emailSpan.textContent = session.email;
+    
     const phoneSpan = document.getElementById('prof_phone_span');
     if (phoneSpan) phoneSpan.textContent = session.mobile;
+    
     const genderSpan = document.getElementById('prof_gender_span');
     if (genderSpan) genderSpan.textContent = session.gender;
+    
     const addressSpan = document.getElementById('prof_address_span');
     if (addressSpan) addressSpan.innerHTML = session.address.replace(/\n/g, '<br>');
 
-    // Bind Edit inputs
-    document.getElementById('prof_name').value = session.name;
-    document.getElementById('prof_age').value = session.age;
-    document.getElementById('prof_gender').value = session.gender;
-    document.getElementById('prof_mobile').value = session.mobile;
-    document.getElementById('prof_address').value = session.address;
+    // Bind Edit inputs if present
+    const profName = document.getElementById('prof_name');
+    if (profName) profName.value = session.name;
+    const profAge = document.getElementById('prof_age');
+    if (profAge) profAge.value = session.age;
+    const profGender = document.getElementById('prof_gender');
+    if (profGender) profGender.value = session.gender;
+    const profMobile = document.getElementById('prof_mobile');
+    if (profMobile) profMobile.value = session.mobile;
+    const profAddress = document.getElementById('prof_address');
+    if (profAddress) profAddress.value = session.address;
 
     // Render User Requests
     renderUserRequests(session.id);

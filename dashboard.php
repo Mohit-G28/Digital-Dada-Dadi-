@@ -65,7 +65,7 @@ include 'includes/header.php';
     
     <div class="section-header" style="text-align: left; margin-bottom: 30px;">
         <h1>My Dashboard</h1>
-        <p>Namaste, <?php echo htmlspecialchars($_SESSION['user_name']); ?>! Welcome to your digital assistance desk. You can request new help or track your previous requests below.</p>
+        <p>Namaste, <strong class="profile-name"><?php echo htmlspecialchars($_SESSION['user_name']); ?></strong>! Welcome to your digital assistance desk. You can request new help or track your previous requests below.</p>
     </div>
 
     <!-- Alert Notices -->
@@ -88,24 +88,24 @@ include 'includes/header.php';
             <div class="profile-card">
                 <div class="profile-avatar"><i class="fa-solid fa-circle-user"></i></div>
                 <div class="profile-name"><?php echo htmlspecialchars($_SESSION['user_name']); ?></div>
-                <div class="profile-age">Senior Citizen | Age: <?php echo htmlspecialchars($_SESSION['user_age']); ?></div>
+                <div class="profile-age" id="prof_age_badge">Senior Citizen | Age: <?php echo htmlspecialchars($_SESSION['user_age']); ?></div>
                 
                 <div class="profile-details">
                     <p>
                         <strong>Email Address:</strong>
-                        <span><?php echo htmlspecialchars($_SESSION['user_email']); ?></span>
+                        <span id="prof_email_span"><?php echo htmlspecialchars($_SESSION['user_email']); ?></span>
                     </p>
                     <p>
                         <strong>Mobile Number:</strong>
-                        <span><?php echo htmlspecialchars($_SESSION['user_mobile']); ?></span>
+                        <span id="prof_phone_span"><?php echo htmlspecialchars($_SESSION['user_mobile']); ?></span>
                     </p>
                     <p>
                         <strong>Gender:</strong>
-                        <span><?php echo htmlspecialchars($_SESSION['user_gender']); ?></span>
+                        <span id="prof_gender_span"><?php echo htmlspecialchars($_SESSION['user_gender']); ?></span>
                     </p>
                     <p>
                         <strong>Home Address:</strong>
-                        <span><?php echo nl2br(htmlspecialchars($_SESSION['user_address'])); ?></span>
+                        <span id="prof_address_span"><?php echo nl2br(htmlspecialchars($_SESSION['user_address'])); ?></span>
                     </p>
                 </div>
 
