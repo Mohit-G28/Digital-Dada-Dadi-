@@ -115,15 +115,15 @@
             <p class="hero-lead">Dada, Dadi, Nana, Nani - we are here to support you! Whether you need help getting groceries, finding transport for a clinic visit, understanding your phone, or managing medical needs, we are just a click away.</p>
             
             <div class="hero-actions">
-                <?php if (isset($_SESSION['user_id'])): ?>
+                
                     <a href="request_help.html" class="btn btn-primary btn-large"><i class="fa-solid fa-hand-holding-hand"></i> Request Assistance Now</a>
                     <a href="dashboard.html" class="btn btn-secondary btn-large"><i class="fa-solid fa-circle-user"></i> Go to My Dashboard</a>
-                <?php elseif (isset($_SESSION['admin_id'])): ?>
+                
                     <a href="admin/dashboard.html" class="btn btn-primary btn-large"><i class="fa-solid fa-chart-line"></i> Go to Admin Panel</a>
-                <?php else: ?>
+                
                     <a href="register.html" class="btn btn-primary btn-large"><i class="fa-solid fa-user-plus"></i> Join Us (Register Free)</a>
                     <a href="login.html" class="btn btn-secondary btn-large"><i class="fa-solid fa-right-to-bracket"></i> Login to Your Account</a>
-                <?php endif; ?>
+                
             </div>
         </div>
         

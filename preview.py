@@ -117,6 +117,12 @@ def compile_php_to_html():
         full_html = re.sub(r'href="([^"]+)\.php"', r'href="\1.html"', full_html)
         full_html = re.sub(r'action="([^"]+)\.php"', r'action="\1.html"', full_html)
         
+        # E. Clean up all POST & SESSION inline PHP echo conditions & remaining PHP blocks
+        full_html = re.sub(r"<\?php\s+echo\s+isset\(\$_POST\[.*?\]\)\s*\?\s*htmlspecialchars\(\$_POST\[.*?\]\)\s*:\s*''\s*;\s*\?>", "", full_html)
+        full_html = re.sub(r"<\?php\s+echo\s+\(isset\(\$_POST\[.*?\]\).*?\)\s*\?\s*'selected'\s*:\s*''\s*;\s*\?>", "", full_html)
+        full_html = re.sub(r"<\?php\s+echo\s+\$_SESSION\[.*?\]\s*===\s*.*?\s*\?\s*'selected'\s*:\s*''\s*;\s*\?>", "", full_html)
+        full_html = re.sub(r"<\?php.*?\?>", "", full_html, flags=re.DOTALL)
+
         # Write compile to html
         output_filename = filename.replace(".php", ".html")
         with open(output_filename, "w", encoding="utf-8") as f:

@@ -166,9 +166,9 @@
                         <div class="form-group" style="margin-bottom: 0;">
                             <label for="prof_gender" style="font-size: 0.9rem;">Gender</label>
                             <select name="gender" id="prof_gender" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 38px;" required>
-                                <option value="Male" <?php echo $_SESSION['user_gender'] === 'Male' ? 'selected' : ''; ?>>Male</option>
-                                <option value="Female" <?php echo $_SESSION['user_gender'] === 'Female' ? 'selected' : ''; ?>>Female</option>
-                                <option value="Other" <?php echo $_SESSION['user_gender'] === 'Other' ? 'selected' : ''; ?>>Other</option>
+                                <option value="Male" >Male</option>
+                                <option value="Female" >Female</option>
+                                <option value="Other" >Other</option>
                             </select>
                         </div>
                     </div>
@@ -180,7 +180,7 @@
 
                     <div class="form-group" style="margin-bottom: 12px;">
                         <label for="prof_address" style="font-size: 0.9rem;">Home Address</label>
-                        <textarea name="address" id="prof_address" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 80px;" required><?php echo htmlspecialchars($_SESSION['user_address']); ?></textarea>
+                        <textarea name="address" id="prof_address" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 80px;" required></textarea>
                     </div>
 
                     <div style="display: flex; gap: 10px;">
@@ -198,14 +198,14 @@
                 <a href="request_help.html" class="btn btn-primary"><i class="fa-solid fa-circle-plus"></i> Submit New Help Request</a>
             </div>
 
-            <?php if (empty($requests)): ?>
+            
                 <div class="card text-center" style="padding: 40px; border-style: dashed; border-width: 2px;">
                     <i class="fa-solid fa-hand-holding-hand" style="font-size: 3rem; color: var(--color-text-light); margin-bottom: 15px;"></i>
                     <h3>No requests submitted yet</h3>
                     <p>Dada, Dadi, if you need help with medical visits, medicines, grocery shopping, bank trips, or mobile phone settings, please click the button above to request help.</p>
                     <a href="request_help.html" class="btn btn-secondary"><i class="fa-solid fa-hand-holding-hand"></i> Submit Your First Request</a>
                 </div>
-            <?php else: ?>
+            
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
@@ -217,53 +217,33 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($requests as $req): ?>
+                            
                                 <tr>
                                     <td style="font-weight: 600; width: 140px; font-size: 0.95rem;">
-                                        <?php echo date('d M Y, h:i A', strtotime($req['created_at'])); ?>
+                                        
                                     </td>
                                     <td style="font-weight: 700; width: 180px;">
                                         <!-- Show distinct icons per service category -->
-                                        <?php 
-                                        $type = $req['request_type'];
-                                        $icon = "fa-hand-holding";
-                                        if ($type === "Medical") $icon = "fa-prescription-bottle-medical";
-                                        if ($type === "Transport") $icon = "fa-car-side";
-                                        if ($type === "Grocery") $icon = "fa-basket-shopping";
-                                        if ($type === "Technical Help") $icon = "fa-mobile-screen-button";
-                                        if ($type === "Emergency") $icon = "fa-circle-exclamation";
-                                        ?>
-                                        <i class="fa-solid <?php echo $icon; ?>" style="color: var(--color-primary); margin-right: 5px;"></i> 
-                                        <?php echo htmlspecialchars($type); ?>
+                                        
+                                        <i class="fa-solid " style="color: var(--color-primary); margin-right: 5px;"></i> 
+                                        
                                     </td>
                                     <td style="font-size: 1rem; line-height: 1.5; min-width: 250px;">
-                                        <?php echo nl2br(htmlspecialchars($req['description'])); ?>
+                                        
                                     </td>
                                     <td style="width: 140px;">
-                                        <?php 
-                                        $status = $req['status'];
-                                        $badge_class = "pending";
-                                        $status_icon = "fa-clock";
                                         
-                                        if ($status === 'In Progress') {
-                                            $badge_class = "in-progress";
-                                            $status_icon = "fa-person-running";
-                                        } elseif ($status === 'Completed') {
-                                            $badge_class = "completed";
-                                            $status_icon = "fa-circle-check";
-                                        }
-                                        ?>
-                                        <span class="status-badge <?php echo $badge_class; ?>">
-                                            <i class="fa-solid <?php echo $status_icon; ?>"></i>
-                                            <?php echo htmlspecialchars($status); ?>
+                                        <span class="status-badge ">
+                                            <i class="fa-solid "></i>
+                                            
                                         </span>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
+                            
                         </tbody>
                     </table>
                 </div>
-            <?php endif; ?>
+            
         </div>
     </div>
 </div>
