@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Dada Dadi - Help Management Desk for Seniors</title>
+    <!-- Google Fonts for senior friendly readability -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Accessibility Bar for Seniors -->
+    <div class="accessibility-bar">
+        <div class="container accessibility-content">
+            <span class="accessibility-text"><i class="fa-solid fa-eye"></i> Text Size Control:</span>
+            <div class="btn-group-accessibility">
+                <button onclick="changeFontSize(-2)" title="Decrease font size" aria-label="Decrease font size" class="acc-btn">A-</button>
+                <button onclick="resetFontSize()" title="Reset font size" aria-label="Reset font size" class="acc-btn active">Normal</button>
+                <button onclick="changeFontSize(2)" title="Increase font size" aria-label="Increase font size" class="acc-btn">A+</button>
+            </div>
+            <div class="emergency-header-action">
+                <a href="#emergencyModal" class="btn btn-emergency-header" onclick="openEmergencyModal()"><i class="fa-solid fa-circle-exclamation"></i> Emergency Numbers</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="main-header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-hands-holding-child"></i></span>
+                <div class="logo-text">
+                    <span class="logo-title">Digital Dada Dadi</span>
+                    <span class="logo-subtitle">Help Management Desk</span>
+                </div>
+            </a>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle Navigation menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <nav class="nav-menu" id="navMenu"><ul></ul></nav>
+        </div>
+    </header>
+
+    <!-- Global Emergency Modal -->
+    <div class="modal-overlay" id="emergencyModalOverlay" onclick="closeEmergencyModal()"></div>
+    <div class="modal" id="emergencyModal" role="dialog" aria-modal="true" aria-labelledby="emergencyTitle">
+        <div class="modal-header">
+            <h2 id="emergencyTitle" class="emergency-title"><i class="fa-solid fa-phone-volume"></i> Emergency Contact Numbers</h2>
+            <button class="modal-close" onclick="closeEmergencyModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="emergency-instructions">Dada, Dadi, if you are in danger or have a medical emergency, call these numbers immediately. They are free to call at any time.</p>
+            <div class="emergency-card-grid">
+                <div class="emergency-card medical">
+                    <span class="em-icon"><i class="fa-solid fa-truck-medical"></i></span>
+                    <div class="em-details">
+                        <h3>Ambulance</h3>
+                        <a href="tel:102" class="em-num">102</a>
+                    </div>
+                </div>
+                <div class="emergency-card police">
+                    <span class="em-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    <div class="em-details">
+                        <h3>Police</h3>
+                        <a href="tel:100" class="em-num">100</a>
+                    </div>
+                </div>
+                <div class="emergency-card fire">
+                    <span class="em-icon"><i class="fa-solid fa-fire-extinguisher"></i></span>
+                    <div class="em-details">
+                        <h3>Fire Station</h3>
+                        <a href="tel:101" class="em-num">101</a>
+                    </div>
+                </div>
+                <div class="emergency-card seniors">
+                    <span class="em-icon"><i class="fa-solid fa-hands-holding"></i></span>
+                    <div class="em-details">
+                        <h3>Senior Helpline</h3>
+                        <a href="tel:14567" class="em-num">14567</a>
+                    </div>
+                </div>
+            </div>
+            <div class="emergency-alert-desc">
+                <p><strong>Need local volunteer assistance?</strong> If it is not life-threatening but you need quick help, log in and submit a <strong>"Help Request"</strong> with type <strong>"Emergency"</strong>, and our desk staff will reach out to you immediately.</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary btn-large" onclick="closeEmergencyModal()">Close</button>
+        </div>
+    </div>
+    
+    <!-- Toast notifications container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <main class="main-content-area">
+
+
+<div class="container" style="padding: 40px 20px;">
+    
+    <div class="section-header" style="text-align: left; margin-bottom: 30px;">
+        <h1>My Dashboard</h1>
+        <p>Namaste, Ramesh Kapoor! Welcome to your digital assistance desk. You can request new help or track your previous requests below.</p>
+    </div>
+
+    <!-- Alert Notices -->
+    
+    
+
+    <div class="dashboard-grid">
+        <!-- Left: Profile Details -->
+        <div>
+            <div class="profile-card">
+                <div class="profile-avatar"><i class="fa-solid fa-circle-user"></i></div>
+                <div class="profile-name">Ramesh Kapoor</div>
+                <div class="profile-age">Senior Citizen | Age: 72</div>
+                
+                <div class="profile-details">
+                    <p>
+                        <strong>Email Address:</strong>
+                        <span>ramesh@email.com</span>
+                    </p>
+                    <p>
+                        <strong>Mobile Number:</strong>
+                        <span>9876543210</span>
+                    </p>
+                    <p>
+                        <strong>Gender:</strong>
+                        <span>Male</span>
+                    </p>
+                    <p>
+                        <strong>Home Address:</strong>
+                        <span>45, Seva Bhavan Road, Elder Care District, New Delhi</span>
+                    </p>
+                </div>
+
+                <button onclick="toggleProfileEditForm()" class="btn btn-secondary btn-full" style="margin-top: 20px; font-size: 0.95rem;">
+                    <i class="fa-solid fa-user-pen"></i> Edit Profile Details
+                </button>
+            </div>
+
+            <!-- Profile Edit Form (Hidden by default) -->
+            <div id="profileEditFormContainer" class="card" style="display: none; margin-top: 20px; padding: 20px; border-top: 4px solid var(--color-accent);">
+                <h3 style="font-size: 1.2rem; margin-bottom: 15px;">Update Profile</h3>
+                <form action="dashboard.html" method="POST">
+                    <input type="hidden" name="action" value="update_profile">
+                    
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="prof_name" style="font-size: 0.9rem;">Full Name</label>
+                        <input type="text" name="full_name" id="prof_name" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 38px;" value="Ramesh Kapoor" required>
+                    </div>
+
+                    <div class="grid-3" style="grid-template-columns: 1fr 1.2fr; gap: 10px; margin-bottom: 12px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="prof_age" style="font-size: 0.9rem;">Age</label>
+                            <input type="number" name="age" id="prof_age" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 38px;" value="72" min="60" max="120" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="prof_gender" style="font-size: 0.9rem;">Gender</label>
+                            <select name="gender" id="prof_gender" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 38px;" required>
+                                <option value="Male" <?php echo $_SESSION['user_gender'] === 'Male' ? 'selected' : ''; ?>>Male</option>
+                                <option value="Female" <?php echo $_SESSION['user_gender'] === 'Female' ? 'selected' : ''; ?>>Female</option>
+                                <option value="Other" <?php echo $_SESSION['user_gender'] === 'Other' ? 'selected' : ''; ?>>Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="prof_mobile" style="font-size: 0.9rem;">Mobile Number</label>
+                        <input type="tel" name="mobile_number" id="prof_mobile" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 38px;" value="9876543210" pattern="[0-9]{10}" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="prof_address" style="font-size: 0.9rem;">Home Address</label>
+                        <textarea name="address" id="prof_address" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 80px;" required><?php echo htmlspecialchars($_SESSION['user_address']); ?></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1; font-size: 0.9rem; padding: 8px; min-height: 38px;">Save</button>
+                        <button type="button" onclick="toggleProfileEditForm()" class="btn btn-outline-nav" style="flex: 1; font-size: 0.9rem; padding: 8px; min-height: 38px;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: Requests List & Action -->
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin-bottom: 0;"><i class="fa-solid fa-list-check"></i> My Help Requests</h2>
+                <a href="request_help.html" class="btn btn-primary"><i class="fa-solid fa-circle-plus"></i> Submit New Help Request</a>
+            </div>
+
+            <?php if (empty($requests)): ?>
+                <div class="card text-center" style="padding: 40px; border-style: dashed; border-width: 2px;">
+                    <i class="fa-solid fa-hand-holding-hand" style="font-size: 3rem; color: var(--color-text-light); margin-bottom: 15px;"></i>
+                    <h3>No requests submitted yet</h3>
+                    <p>Dada, Dadi, if you need help with medical visits, medicines, grocery shopping, bank trips, or mobile phone settings, please click the button above to request help.</p>
+                    <a href="request_help.html" class="btn btn-secondary"><i class="fa-solid fa-hand-holding-hand"></i> Submit Your First Request</a>
+                </div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date Raised</th>
+                                <th>Request Category</th>
+                                <th>Description / Message</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($requests as $req): ?>
+                                <tr>
+                                    <td style="font-weight: 600; width: 140px; font-size: 0.95rem;">
+                                        <?php echo date('d M Y, h:i A', strtotime($req['created_at'])); ?>
+                                    </td>
+                                    <td style="font-weight: 700; width: 180px;">
+                                        <!-- Show distinct icons per service category -->
+                                        <?php 
+                                        $type = $req['request_type'];
+                                        $icon = "fa-hand-holding";
+                                        if ($type === "Medical") $icon = "fa-prescription-bottle-medical";
+                                        if ($type === "Transport") $icon = "fa-car-side";
+                                        if ($type === "Grocery") $icon = "fa-basket-shopping";
+                                        if ($type === "Technical Help") $icon = "fa-mobile-screen-button";
+                                        if ($type === "Emergency") $icon = "fa-circle-exclamation";
+                                        ?>
+                                        <i class="fa-solid <?php echo $icon; ?>" style="color: var(--color-primary); margin-right: 5px;"></i> 
+                                        <?php echo htmlspecialchars($type); ?>
+                                    </td>
+                                    <td style="font-size: 1rem; line-height: 1.5; min-width: 250px;">
+                                        <?php echo nl2br(htmlspecialchars($req['description'])); ?>
+                                    </td>
+                                    <td style="width: 140px;">
+                                        <?php 
+                                        $status = $req['status'];
+                                        $badge_class = "pending";
+                                        $status_icon = "fa-clock";
+                                        
+                                        if ($status === 'In Progress') {
+                                            $badge_class = "in-progress";
+                                            $status_icon = "fa-person-running";
+                                        } elseif ($status === 'Completed') {
+                                            $badge_class = "completed";
+                                            $status_icon = "fa-circle-check";
+                                        }
+                                        ?>
+                                        <span class="status-badge <?php echo $badge_class; ?>">
+                                            <i class="fa-solid <?php echo $status_icon; ?>"></i>
+                                            <?php echo htmlspecialchars($status); ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle inline profile edit form
+function toggleProfileEditForm() {
+    const form = document.getElementById('profileEditFormContainer');
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+    } else {
+        form.style.display = 'none';
+    }
+}
+</script>
+
+
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a href="index.html" class="footer-logo">
+                    <span class="logo-icon"><i class="fa-solid fa-hands-holding-child"></i></span>
+                    <span class="logo-text-footer">Digital Dada Dadi</span>
+                </a>
+                <p class="footer-tagline">Empowering and supporting our elders in the digital age. A helping hand for those who nurtured us.</p>
+                <div class="footer-emergency-box">
+                    <span class="em-label"><i class="fa-solid fa-phone"></i> Elder Helpline:</span>
+                    <a href="tel:14567" class="em-link">14567</a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html"><i class="fa-solid fa-chevron-right"></i> Home</a></li>
+                    <li><a href="about.html"><i class="fa-solid fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="contact.html"><i class="fa-solid fa-chevron-right"></i> Contact Page</a></li>
+                    
+                        <li><a href="login.html"><i class="fa-solid fa-chevron-right"></i> Login Panel</a></li>
+                        <li><a href="register.html"><i class="fa-solid fa-chevron-right"></i> Register as Senior</a></li>
+                    
+                        <li><a href="logout.html"><i class="fa-solid fa-chevron-right"></i> Logout</a></li>
+                    
+                </ul>
+            </div>
+
+            <div class="footer-contact">
+                <h3>Our Office</h3>
+                <p><i class="fa-solid fa-location-dot"></i> 45, Seva Bhavan Road, Elder Care District, New Delhi, India</p>
+                <p><i class="fa-solid fa-phone"></i> +91 11 2345 6789</p>
+                <p><i class="fa-solid fa-envelope"></i> help@digitaldadadadi.org</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container footer-bottom-flex">
+                <p>&copy;  Digital Dada Dadi Help Management Desk. All Rights Reserved.</p>
+                <p class="designed-for-accessibility"><i class="fa-solid fa-wheelchair"></i> Designed for accessibility (WCAG compatible)</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript File -->
+    <script src="js/script.js"></script>
+</body>
+</html>

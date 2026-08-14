@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Dada Dadi - Help Management Desk for Seniors</title>
+    <!-- Google Fonts for senior friendly readability -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Accessibility Bar for Seniors -->
+    <div class="accessibility-bar">
+        <div class="container accessibility-content">
+            <span class="accessibility-text"><i class="fa-solid fa-eye"></i> Text Size Control:</span>
+            <div class="btn-group-accessibility">
+                <button onclick="changeFontSize(-2)" title="Decrease font size" aria-label="Decrease font size" class="acc-btn">A-</button>
+                <button onclick="resetFontSize()" title="Reset font size" aria-label="Reset font size" class="acc-btn active">Normal</button>
+                <button onclick="changeFontSize(2)" title="Increase font size" aria-label="Increase font size" class="acc-btn">A+</button>
+            </div>
+            <div class="emergency-header-action">
+                <a href="#emergencyModal" class="btn btn-emergency-header" onclick="openEmergencyModal()"><i class="fa-solid fa-circle-exclamation"></i> Emergency Numbers</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="main-header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-hands-holding-child"></i></span>
+                <div class="logo-text">
+                    <span class="logo-title">Digital Dada Dadi</span>
+                    <span class="logo-subtitle">Help Management Desk</span>
+                </div>
+            </a>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle Navigation menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <nav class="nav-menu" id="navMenu"><ul></ul></nav>
+        </div>
+    </header>
+
+    <!-- Global Emergency Modal -->
+    <div class="modal-overlay" id="emergencyModalOverlay" onclick="closeEmergencyModal()"></div>
+    <div class="modal" id="emergencyModal" role="dialog" aria-modal="true" aria-labelledby="emergencyTitle">
+        <div class="modal-header">
+            <h2 id="emergencyTitle" class="emergency-title"><i class="fa-solid fa-phone-volume"></i> Emergency Contact Numbers</h2>
+            <button class="modal-close" onclick="closeEmergencyModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="emergency-instructions">Dada, Dadi, if you are in danger or have a medical emergency, call these numbers immediately. They are free to call at any time.</p>
+            <div class="emergency-card-grid">
+                <div class="emergency-card medical">
+                    <span class="em-icon"><i class="fa-solid fa-truck-medical"></i></span>
+                    <div class="em-details">
+                        <h3>Ambulance</h3>
+                        <a href="tel:102" class="em-num">102</a>
+                    </div>
+                </div>
+                <div class="emergency-card police">
+                    <span class="em-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    <div class="em-details">
+                        <h3>Police</h3>
+                        <a href="tel:100" class="em-num">100</a>
+                    </div>
+                </div>
+                <div class="emergency-card fire">
+                    <span class="em-icon"><i class="fa-solid fa-fire-extinguisher"></i></span>
+                    <div class="em-details">
+                        <h3>Fire Station</h3>
+                        <a href="tel:101" class="em-num">101</a>
+                    </div>
+                </div>
+                <div class="emergency-card seniors">
+                    <span class="em-icon"><i class="fa-solid fa-hands-holding"></i></span>
+                    <div class="em-details">
+                        <h3>Senior Helpline</h3>
+                        <a href="tel:14567" class="em-num">14567</a>
+                    </div>
+                </div>
+            </div>
+            <div class="emergency-alert-desc">
+                <p><strong>Need local volunteer assistance?</strong> If it is not life-threatening but you need quick help, log in and submit a <strong>"Help Request"</strong> with type <strong>"Emergency"</strong>, and our desk staff will reach out to you immediately.</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary btn-large" onclick="closeEmergencyModal()">Close</button>
+        </div>
+    </div>
+    
+    <!-- Toast notifications container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <main class="main-content-area">
+
+
+<section class="section-padding">
+    <div class="container">
+        <div class="section-header">
+            <h1>Contact Us</h1>
+            <p>Have questions, want to volunteer, or need assistance? Reach out to us anytime!</p>
+        </div>
+
+        <div class="grid-3" style="grid-template-columns: 1fr 1.5fr; gap: 40px; align-items: start;">
+            <!-- Address and details card -->
+            <div class="card" style="border-top: 5px solid var(--color-accent);">
+                <h3>Office Details</h3>
+                <p style="margin-bottom: 25px;">You can visit us, write to us, or call us directly. We are always happy to speak with our elders.</p>
+                
+                <div class="footer-contact" style="color: var(--color-text-dark);">
+                    <p style="color: var(--color-text-dark); margin-bottom: 20px;">
+                        <i class="fa-solid fa-location-dot" style="font-size: 1.5rem; color: var(--color-primary);"></i>
+                        <span><strong>Office Address:</strong><br>45, Seva Bhavan Road, Elder Care District, New Delhi, India 110001</span>
+                    </p>
+                    <p style="color: var(--color-text-dark); margin-bottom: 20px;">
+                        <i class="fa-solid fa-phone" style="font-size: 1.5rem; color: var(--color-primary);"></i>
+                        <span><strong>Phone Support:</strong><br>+91 11 2345 6789</span>
+                    </p>
+                    <p style="color: var(--color-text-dark); margin-bottom: 20px;">
+                        <i class="fa-solid fa-envelope" style="font-size: 1.5rem; color: var(--color-primary);"></i>
+                        <span><strong>Email Address:</strong><br>help@digitaldadadadi.org</span>
+                    </p>
+                    <p style="color: var(--color-text-dark); margin-bottom: 20px;">
+                        <i class="fa-solid fa-phone-volume" style="font-size: 1.5rem; color: var(--color-danger);"></i>
+                        <span><strong>National Elder Helpline:</strong><br><a href="tel:14567" style="color: var(--color-danger); font-size: 1.3rem; font-weight: 800;">14567</a> (Toll Free)</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="card" style="padding: 30px;">
+                <h3>Send Us a Message</h3>
+                <p>Fill out the form below. If you are an elder needing immediate help, please use the "Emergency Numbers" or register and request help from your dashboard.</p>
+                
+                
+
+                <form action="contact.html" method="POST" id="contactForm">
+                    <div class="form-group">
+                        <label for="con_name">Your Name <span class="required">*</span></label>
+                        <input type="text" name="name" id="con_name" class="form-control" placeholder="Enter your full name" required>
+                        <div class="form-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="con_email">Your Email Address <span class="required">*</span></label>
+                        <input type="email" name="email" id="con_email" class="form-control" placeholder="Enter email address" required>
+                        <div class="form-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="con_message">Message <span class="required">*</span></label>
+                        <textarea name="message" id="con_message" class="form-control" placeholder="Type your message here..." required></textarea>
+                        <div class="form-error"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-large btn-full"><i class="fa-solid fa-paper-plane"></i> Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a href="index.html" class="footer-logo">
+                    <span class="logo-icon"><i class="fa-solid fa-hands-holding-child"></i></span>
+                    <span class="logo-text-footer">Digital Dada Dadi</span>
+                </a>
+                <p class="footer-tagline">Empowering and supporting our elders in the digital age. A helping hand for those who nurtured us.</p>
+                <div class="footer-emergency-box">
+                    <span class="em-label"><i class="fa-solid fa-phone"></i> Elder Helpline:</span>
+                    <a href="tel:14567" class="em-link">14567</a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html"><i class="fa-solid fa-chevron-right"></i> Home</a></li>
+                    <li><a href="about.html"><i class="fa-solid fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="contact.html"><i class="fa-solid fa-chevron-right"></i> Contact Page</a></li>
+                    
+                        <li><a href="login.html"><i class="fa-solid fa-chevron-right"></i> Login Panel</a></li>
+                        <li><a href="register.html"><i class="fa-solid fa-chevron-right"></i> Register as Senior</a></li>
+                    
+                        <li><a href="logout.html"><i class="fa-solid fa-chevron-right"></i> Logout</a></li>
+                    
+                </ul>
+            </div>
+
+            <div class="footer-contact">
+                <h3>Our Office</h3>
+                <p><i class="fa-solid fa-location-dot"></i> 45, Seva Bhavan Road, Elder Care District, New Delhi, India</p>
+                <p><i class="fa-solid fa-phone"></i> +91 11 2345 6789</p>
+                <p><i class="fa-solid fa-envelope"></i> help@digitaldadadadi.org</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container footer-bottom-flex">
+                <p>&copy;  Digital Dada Dadi Help Management Desk. All Rights Reserved.</p>
+                <p class="designed-for-accessibility"><i class="fa-solid fa-wheelchair"></i> Designed for accessibility (WCAG compatible)</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript File -->
+    <script src="js/script.js"></script>
+</body>
+</html>

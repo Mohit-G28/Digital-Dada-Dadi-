@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Dada Dadi - Manage Help Requests</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Accessibility Bar -->
+    <div class="accessibility-bar">
+        <div class="container accessibility-content">
+            <span class="accessibility-text"><i class="fa-solid fa-eye"></i> Text Size Control:</span>
+            <div class="btn-group-accessibility">
+                <button onclick="changeFontSize(-2)" title="Decrease font size" aria-label="Decrease font size" class="acc-btn">A-</button>
+                <button onclick="resetFontSize()" title="Reset font size" aria-label="Reset font size" class="acc-btn active">Normal</button>
+                <button onclick="changeFontSize(2)" title="Increase font size" aria-label="Increase font size" class="acc-btn">A+</button>
+            </div>
+            <div class="emergency-header-action">
+                <a href="#emergencyModal" class="btn btn-emergency-header" onclick="openEmergencyModal()"><i class="fa-solid fa-circle-exclamation"></i> Emergency Numbers</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <div class="container nav-container">
+            <a href="admin_dashboard.html" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-hands-holding-child"></i></span>
+                <div class="logo-text">
+                    <span class="logo-title">Digital Dada Dadi</span>
+                    <span class="logo-subtitle">Help Management Desk</span>
+                </div>
+            </a>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle Navigation menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <nav class="nav-menu" id="navMenu">
+                <!-- Loaded dynamically -->
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content-area">
+        <div class="container" style="padding: 40px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+                <div class="section-header" style="text-align: left; margin: 0;">
+                    <h1>Manage Help Requests</h1>
+                    <p>Monitor senior needs, coordinate response teams, and update progress states.</p>
+                </div>
+                <a href="admin_dashboard.html" class="btn btn-outline-nav"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="admin-controls-card">
+                <div style="display: flex; width: 100%; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                    
+                    <div style="flex: 2; min-width: 250px;">
+                        <label for="search_inp" style="display: block; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--color-primary-dark); margin-bottom: 5px;">Search Text</label>
+                        <input type="text" id="search_inp" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 38px;" placeholder="Search name or request content...">
+                    </div>
+
+                    <div style="flex: 1; min-width: 150px;">
+                        <label for="status_filter" style="display: block; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--color-primary-dark); margin-bottom: 5px;">Status</label>
+                        <select id="status_filter" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 38px;">
+                            <option value="">-- All Statuses --</option>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+
+                    <div style="flex: 1; min-width: 150px;">
+                        <label for="type_filter" style="display: block; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--color-primary-dark); margin-bottom: 5px;">Help Category</label>
+                        <select id="type_filter" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 38px;">
+                            <option value="">-- All Categories --</option>
+                            <option value="Medical">Medical Support</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Grocery">Grocery</option>
+                            <option value="Technical Help">Technical Help</option>
+                            <option value="Emergency">Emergency</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <button onclick="resetAdminRequestsFilters()" class="btn btn-outline-nav" style="padding: 8px 16px; font-size: 1rem; min-height: 38px;"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Requests Table -->
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date & Category</th>
+                            <th>Senior Details</th>
+                            <th>Requirements / Description</th>
+                            <th>Status Control</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminRequestsTableBody">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a href="index.html" class="footer-logo">
+                    <span class="logo-icon"><i class="fa-solid fa-hands-holding-child"></i></span>
+                    <span class="logo-text-footer">Digital Dada Dadi</span>
+                </a>
+                <p class="footer-tagline">Empowering and supporting our elders in the digital age. A helping hand for those who nurtured us.</p>
+                <div class="footer-emergency-box">
+                    <span class="em-label"><i class="fa-solid fa-phone"></i> Elder Helpline:</span>
+                    <a href="tel:14567" class="em-link">14567</a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html"><i class="fa-solid fa-chevron-right"></i> Home</a></li>
+                    <li><a href="about.html"><i class="fa-solid fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="contact.html"><i class="fa-solid fa-chevron-right"></i> Contact Page</a></li>
+                    <li><a href="login.html"><i class="fa-solid fa-chevron-right"></i> Login Panel</a></li>
+                    <li><a href="register.html"><i class="fa-solid fa-chevron-right"></i> Register as Senior</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-contact">
+                <h3>Our Office</h3>
+                <p><i class="fa-solid fa-location-dot"></i> 45, Seva Bhavan Road, Elder Care District, New Delhi, India</p>
+                <p><i class="fa-solid fa-phone"></i> +91 11 2345 6789</p>
+                <p><i class="fa-solid fa-envelope"></i> help@digitaldadadadi.org</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container footer-bottom-flex">
+                <p>&copy; 2026 Digital Dada Dadi Help Management Desk. All Rights Reserved.</p>
+                <p class="designed-for-accessibility"><i class="fa-solid fa-wheelchair"></i> Designed for accessibility (WCAG compatible)</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Emergency Modal -->
+    <div class="modal-overlay" id="emergencyModalOverlay" onclick="closeEmergencyModal()"></div>
+    <div class="modal" id="emergencyModal" role="dialog" aria-modal="true" aria-labelledby="emergencyTitle">
+        <div class="modal-header">
+            <h2 id="emergencyTitle" class="emergency-title"><i class="fa-solid fa-phone-volume"></i> Emergency Contact Numbers</h2>
+            <button class="modal-close" onclick="closeEmergencyModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="emergency-instructions">Dada, Dadi, if you are in danger or have a medical emergency, call these numbers immediately. They are free to call at any time.</p>
+            <div class="emergency-card-grid">
+                <div class="emergency-card medical">
+                    <span class="em-icon"><i class="fa-solid fa-truck-medical"></i></span>
+                    <div class="em-details">
+                        <h3>Ambulance</h3>
+                        <a href="tel:102" class="em-num">102</a>
+                    </div>
+                </div>
+                <div class="emergency-card police">
+                    <span class="em-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    <div class="em-details">
+                        <h3>Police</h3>
+                        <a href="tel:100" class="em-num">100</a>
+                    </div>
+                </div>
+                <div class="emergency-card fire">
+                    <span class="em-icon"><i class="fa-solid fa-fire-extinguisher"></i></span>
+                    <div class="em-details">
+                        <h3>Fire Station</h3>
+                        <a href="tel:101" class="em-num">101</a>
+                    </div>
+                </div>
+                <div class="emergency-card seniors">
+                    <span class="em-icon"><i class="fa-solid fa-hands-holding"></i></span>
+                    <div class="em-details">
+                        <h3>Senior Helpline</h3>
+                        <a href="tel:14567" class="em-num">14567</a>
+                    </div>
+                </div>
+            </div>
+            <div class="emergency-alert-desc">
+                <p><strong>Need local volunteer assistance?</strong> If it is not life-threatening but you need quick help, log in and submit a <strong>"Help Request"</strong> with type <strong>"Emergency"</strong>, and our desk staff will reach out to you immediately.</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary btn-large" onclick="closeEmergencyModal()">Close</button>
+        </div>
+    </div>
+    
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

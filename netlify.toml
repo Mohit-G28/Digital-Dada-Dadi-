@@ -1,0 +1,52 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/about"
+  to = "/about.html"
+  status = 200
+
+[[redirects]]
+  from = "/contact"
+  to = "/contact.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/register"
+  to = "/register.html"
+  status = 200
+
+[[redirects]]
+  from = "/request_help"
+  to = "/request_help.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin_dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/requests"
+  to = "/admin_requests.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/users"
+  to = "/admin_users.html"
+  status = 200
