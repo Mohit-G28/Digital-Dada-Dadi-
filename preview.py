@@ -98,20 +98,29 @@ def compile_php_to_html():
         
         # C. Mock requests in dashboard table
         mock_requests_html = """
-        <tr>
-            <td style="font-weight: 600; width: 140px; font-size: 0.95rem;">08 Aug 2026, 10:15 AM</td>
-            <td style="font-weight: 700; width: 180px;"><i class="fa-solid fa-basket-shopping" style="color: var(--color-primary); margin-right: 5px;"></i> Grocery</td>
-            <td style="font-size: 1rem; line-height: 1.5; min-width: 250px;">Need 2kg potatoes, 1kg sugar and a packet of tea delivered.</td>
-            <td style="width: 140px;"><span class="status-badge pending"><i class="fa-solid fa-clock"></i> Pending</span></td>
-        </tr>
-        <tr>
-            <td style="font-weight: 600; width: 140px; font-size: 0.95rem;">06 Aug 2026, 02:30 PM</td>
-            <td style="font-weight: 700; width: 180px;"><i class="fa-solid fa-prescription-bottle-medical" style="color: var(--color-primary); margin-right: 5px;"></i> Medical</td>
-            <td style="font-size: 1rem; line-height: 1.5; min-width: 250px;">Need escort to eye hospital checkup tomorrow morning.</td>
-            <td style="width: 140px;"><span class="status-badge completed"><i class="fa-solid fa-circle-check"></i> Completed</span></td>
-        </tr>
+            <div class="card text-center" id="emptyRequestsState" style="padding: 40px; border-style: dashed; border-width: 2px;">
+                <i class="fa-solid fa-hand-holding-hand" style="font-size: 3rem; color: var(--color-text-light); margin-bottom: 15px;"></i>
+                <h3>No requests submitted yet</h3>
+                <p>Dada, Dadi, if you need help with medical visits, medicines, grocery shopping, bank trips, or mobile phone settings, please click the button above to request help.</p>
+                <a href="request_help.html" class="btn btn-secondary"><i class="fa-solid fa-hand-holding-hand"></i> Submit Your First Request</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date Raised</th>
+                            <th>Request Category</th>
+                            <th>Description / Message</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTableBody">
+                    </tbody>
+                </table>
+            </div>
         """
-        full_html = re.sub(r"<\?php if \(empty\(\$requests\)\):.*?\?><\?php else:.*?\?>(.*?)<\?php endif; \?>", mock_requests_html, full_html, flags=re.DOTALL)
+        full_html = re.sub(r"<\?php if \(empty\(\$requests\)\):.*?<\?php endif; \?>", mock_requests_html, full_html, flags=re.DOTALL)
 
         # D. Links update (.php -> .html)
         full_html = re.sub(r'href="([^"]+)\.php"', r'href="\1.html"', full_html)

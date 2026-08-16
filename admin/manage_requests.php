@@ -28,19 +28,35 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_status') {
     }
 }
 
-// 2. Handle Delete Request Action
-if (isset($_GET['delete_id'])) {
-    $delete_id = intval($_GET['delete_id']);
-    try {
-        $stmt = $pdo->prepare("DELETE FROM help_requests WHERE id = ?");
-        $stmt->execute([$delete_id]);
-        $success_msg = "Help request deleted successfully.";
-    } catch (PDOException $e) {
-        $error_msg = "Error deleting request: " . $e->getMessage();
+// 3. Handle Create Request Action
+if (isset($_POST['action']) && $_POST['action'] === 'create_request') {
+    $user_id = intval($_POST['user_id'] ?? 0);
+    $request_type = trim($_POST['request_type'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $status = trim($_POST['status'] ?? 'Pending');
+
+    if ($user_id > 0 && !empty($request_type) && !empty($description)) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO help_requests (user_id, request_type, description, status) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$user_id, $request_type, $description, $status]);
+            $success_msg = "Help request created successfully for the selected senior citizen!";
+        } catch (PDOException $e) {
+            $error_msg = "Error creating request: " . $e->getMessage();
+        }
+    } else {
+        $error_msg = "Please fill in all required fields.";
     }
 }
 
-// 3. Filters
+// Fetch all registered seniors for dropdown
+$registered_seniors = [];
+try {
+    $registered_seniors = $pdo->query("SELECT id, full_name, email FROM users ORDER BY full_name ASC")->fetchAll();
+} catch (PDOException $e) {
+    // Ignore if table empty or error
+}
+
+// 4. Filters
 $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
 $status_filter = isset($_GET['status_filter']) ? trim($_GET['status_filter']) : '';
 $type_filter = isset($_GET['type_filter']) ? trim($_GET['type_filter']) : '';
@@ -94,9 +110,62 @@ include '../includes/header.php';
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
         <div class="section-header" style="text-align: left; margin: 0;">
             <h1>Manage Help Requests</h1>
-            <p>Monitor senior needs, coordinate response teams, and update progress states.</p>
+            <p>Monitor senior needs, coordinate response teams, update progress states, or submit requests for seniors.</p>
         </div>
-        <a href="dashboard.php" class="btn btn-outline-nav"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" onclick="toggleAdminCreateRequestCard()" class="btn btn-primary"><i class="fa-solid fa-circle-plus"></i> Submit Request for Senior</button>
+            <a href="dashboard.php" class="btn btn-outline-nav"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Admin Create Help Request Card (Hidden by default) -->
+    <div id="adminCreateRequestCard" class="card" style="display: none; margin-bottom: 30px; padding: 25px; border-top: 5px solid var(--color-primary);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 0; color: var(--color-primary-dark); font-weight: 800;">
+                <i class="fa-solid fa-user-plus" style="color: var(--color-primary);"></i> Submit Help Request on Behalf of Senior
+            </h3>
+            <button type="button" onclick="toggleAdminCreateRequestCard()" class="modal-close" style="font-size: 1.5rem; background: none; border: none; cursor: pointer;">&times;</button>
+        </div>
+        <form action="manage_requests.php" method="POST" id="adminCreateHelpRequestForm">
+            <input type="hidden" name="action" value="create_request">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="admin_req_user" style="font-size: 0.9rem;">Select Senior Citizen <span class="required">*</span></label>
+                    <select name="user_id" id="admin_req_user" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 42px;" required>
+                        <?php foreach ($registered_seniors as $s): ?>
+                            <option value="<?php echo $s['id']; ?>"><?php echo htmlspecialchars($s['full_name']); ?> (<?php echo htmlspecialchars($s['email']); ?>)</option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="admin_req_type" style="font-size: 0.9rem;">Help Category <span class="required">*</span></label>
+                    <select name="request_type" id="admin_req_type" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 42px;" required>
+                        <option value="Medical">Medical</option>
+                        <option value="Technical Help">Technical Help</option>
+                        <option value="Grocery">Grocery</option>
+                        <option value="Bank Trip">Bank Trip</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Emergency">Emergency</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="admin_req_status" style="font-size: 0.9rem;">Initial Status <span class="required">*</span></label>
+                    <select name="status" id="admin_req_status" class="form-control" style="padding: 8px 12px; font-size: 1rem; min-height: 42px;" required>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="admin_req_desc" style="font-size: 0.9rem;">Description / Message <span class="required">*</span></label>
+                <textarea name="description" id="admin_req_desc" class="form-control" style="padding: 10px 14px; font-size: 1rem; min-height: 90px;" placeholder="Enter details of help requested for this senior citizen..." required></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" onclick="toggleAdminCreateRequestCard()" class="btn btn-outline-nav" style="padding: 8px 16px; font-size: 0.95rem;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.95rem;"><i class="fa-solid fa-paper-plane"></i> Submit Request</button>
+            </div>
+        </form>
     </div>
 
     <!-- Alert Notices -->

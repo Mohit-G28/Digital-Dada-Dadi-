@@ -117,7 +117,7 @@ include 'includes/header.php';
             <!-- Profile Edit Form (Hidden by default) -->
             <div id="profileEditFormContainer" class="card" style="display: none; margin-top: 20px; padding: 20px; border-top: 4px solid var(--color-accent);">
                 <h3 style="font-size: 1.2rem; margin-bottom: 15px;">Update Profile</h3>
-                <form action="dashboard.php" method="POST">
+                <form action="dashboard.php" method="POST" id="profileEditForm">
                     <input type="hidden" name="action" value="update_profile">
                     
                     <div class="form-group" style="margin-bottom: 12px;">
@@ -160,77 +160,83 @@ include 'includes/header.php';
 
         <!-- Right: Requests List & Action -->
         <div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                <h2 style="margin-bottom: 0;"><i class="fa-solid fa-list-check"></i> My Help Requests</h2>
-                <a href="request_help.php" class="btn btn-primary"><i class="fa-solid fa-circle-plus"></i> Submit New Help Request</a>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 style="margin-bottom: 0; color: var(--color-primary-dark); font-weight: 800; display: flex; align-items: center; gap: 10px; font-size: 1.7rem;">
+                    <i class="fa-solid fa-bars-staggered" style="color: var(--color-primary);"></i> My Help Requests
+                </h2>
+                <a href="request_help.php" class="btn btn-primary" style="padding: 10px 18px; font-size: 0.95rem; background-color: var(--color-primary); border: none; border-radius: 8px;">
+                    <i class="fa-solid fa-circle-plus"></i> Submit New Help Request
+                </a>
             </div>
 
-            <?php if (empty($requests)): ?>
-                <div class="card text-center" style="padding: 40px; border-style: dashed; border-width: 2px;">
-                    <i class="fa-solid fa-hand-holding-hand" style="font-size: 3rem; color: var(--color-text-light); margin-bottom: 15px;"></i>
-                    <h3>No requests submitted yet</h3>
-                    <p>Dada, Dadi, if you need help with medical visits, medicines, grocery shopping, bank trips, or mobile phone settings, please click the button above to request help.</p>
-                    <a href="request_help.php" class="btn btn-secondary"><i class="fa-solid fa-hand-holding-hand"></i> Submit Your First Request</a>
-                </div>
-            <?php else: ?>
-                <div class="table-responsive">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Date Raised</th>
-                                <th>Request Category</th>
-                                <th>Description / Message</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <div class="card text-center" id="emptyRequestsState" style="padding: 40px; border-style: dashed; border-width: 2px; display: <?php echo empty($requests) ? 'block' : 'none'; ?>;">
+                <i class="fa-solid fa-hand-holding-hand" style="font-size: 3rem; color: var(--color-text-light); margin-bottom: 15px;"></i>
+                <h3>No requests submitted yet</h3>
+                <p>Dada, Dadi, if you need help with medical visits, medicines, grocery shopping, bank trips, or mobile phone settings, please click the button above to request help.</p>
+                <a href="request_help.php" class="btn btn-secondary"><i class="fa-solid fa-hand-holding-hand"></i> Submit Your First Request</a>
+            </div>
+
+            <div class="table-responsive" style="display: <?php echo empty($requests) ? 'none' : 'block'; ?>;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="color: #0f766e; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px;">DATE RAISED</th>
+                            <th style="color: #0f766e; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px;">REQUEST CATEGORY</th>
+                            <th style="color: #0f766e; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px;">DESCRIPTION / MESSAGE</th>
+                            <th style="color: #0f766e; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px;">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTableBody">
+                        <?php if (!empty($requests)): ?>
                             <?php foreach ($requests as $req): ?>
                                 <tr>
-                                    <td style="font-weight: 600; width: 140px; font-size: 0.95rem;">
-                                        <?php echo date('d M Y, h:i A', strtotime($req['created_at'])); ?>
+                                    <td style="font-weight: 700; width: 180px; font-size: 0.95rem; color: var(--color-text-dark);">
+                                        <?php echo date('M d, Y, h:i A', strtotime($req['created_at'])); ?>
                                     </td>
-                                    <td style="font-weight: 700; width: 180px;">
+                                    <td style="font-weight: 700; width: 180px; color: var(--color-text-dark);">
                                         <!-- Show distinct icons per service category -->
                                         <?php 
                                         $type = $req['request_type'];
                                         $icon = "fa-hand-holding";
-                                        if ($type === "Medical") $icon = "fa-prescription-bottle-medical";
-                                        if ($type === "Transport") $icon = "fa-car-side";
-                                        if ($type === "Grocery") $icon = "fa-basket-shopping";
-                                        if ($type === "Technical Help") $icon = "fa-mobile-screen-button";
-                                        if ($type === "Emergency") $icon = "fa-circle-exclamation";
+                                        if (strpos($type, 'Medical') !== false) $icon = "fa-prescription-bottle-medical";
+                                        elseif (strpos($type, 'Transport') !== false) $icon = "fa-car-side";
+                                        elseif (strpos($type, 'Grocery') !== false) $icon = "fa-basket-shopping";
+                                        elseif (strpos($type, 'Tech') !== false) $icon = "fa-mobile-screen-button";
+                                        elseif (strpos($type, 'Emergency') !== false) $icon = "fa-circle-exclamation";
+                                        elseif (strpos($type, 'Bank') !== false) $icon = "fa-building-columns";
                                         ?>
-                                        <i class="fa-solid <?php echo $icon; ?>" style="color: var(--color-primary); margin-right: 5px;"></i> 
+                                        <i class="fa-solid <?php echo $icon; ?>" style="color: var(--color-primary); margin-right: 8px; font-size: 1.1rem;"></i> 
                                         <?php echo htmlspecialchars($type); ?>
                                     </td>
-                                    <td style="font-size: 1rem; line-height: 1.5; min-width: 250px;">
+                                    <td style="font-size: 1rem; line-height: 1.5; min-width: 250px; color: var(--color-text-dark);">
                                         <?php echo nl2br(htmlspecialchars($req['description'])); ?>
                                     </td>
-                                    <td style="width: 140px;">
+                                    <td style="width: 150px;">
                                         <?php 
-                                        $status = $req['status'];
+                                        $status = trim($req['status'] ?? 'Pending');
                                         $badge_class = "pending";
                                         $status_icon = "fa-clock";
+                                        $status_upper = strtoupper($status);
                                         
-                                        if ($status === 'In Progress') {
+                                        if ($status === 'In Progress' || $status_upper === 'IN PROGRESS') {
                                             $badge_class = "in-progress";
                                             $status_icon = "fa-person-running";
-                                        } elseif ($status === 'Completed') {
+                                        } elseif ($status === 'Completed' || $status_upper === 'COMPLETED') {
                                             $badge_class = "completed";
                                             $status_icon = "fa-circle-check";
                                         }
                                         ?>
                                         <span class="status-badge <?php echo $badge_class; ?>">
                                             <i class="fa-solid <?php echo $status_icon; ?>"></i>
-                                            <?php echo htmlspecialchars($status); ?>
+                                            <?php echo htmlspecialchars($status_upper); ?>
                                         </span>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
