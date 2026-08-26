@@ -438,7 +438,7 @@ function initLoginLogic() {
                     window.location.href = 'dashboard.html';
                 }, 400);
             } else {
-                showToast("Invalid credentials. Try demo account: ramesh@email.com / password123", "error");
+                showToast("Invalid email or password. Please try again.", "error");
             }
         });
     }
@@ -485,7 +485,7 @@ function initLoginLogic() {
                     window.location.href = 'admin_dashboard.html';
                 }, 400);
             } else {
-                showToast("Invalid admin credentials! Demo Username: admin / Password: adminpassword123", "error");
+                showToast("Invalid admin username or password. Please try again.", "error");
             }
         });
     }

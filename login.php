@@ -135,9 +135,6 @@ include 'includes/header.php';
             <p class="text-center" style="margin-top: 20px; font-size: 1.05rem;">
                 New to the platform? <a href="register.php"><strong>Register as Senior Citizen here</strong></a>
             </p>
-            <p class="text-center" style="margin-top: 10px; font-size: 0.9rem; color: var(--color-text-light);">
-                Demo Senior Citizen credentials: Email <code>ramesh@email.com</code> / Password <code>password123</code> or <code>kritipatil7@gmail.com</code> / <code>kriti123</code>
-            </p>
         </div>
 
         <!-- B. Admin Staff Login Form -->
@@ -164,9 +161,6 @@ include 'includes/header.php';
 
                 <button type="submit" class="btn btn-secondary btn-large btn-full"><i class="fa-solid fa-shield-halved"></i> Login as Admin</button>
             </form>
-            <p class="text-center" style="margin-top: 20px; font-size: 0.9rem; color: var(--color-text-light);">
-                Demo admin credentials: Username <code>admin</code> / Password <code>adminpassword123</code>
-            </p>
         </div>
 
     </div>
