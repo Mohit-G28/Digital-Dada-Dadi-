@@ -133,10 +133,12 @@
 
         getHelpRequestsByUserId: async function (userId) {
             if (!client) return null;
+            const parsedUserId = parseInt(userId);
+            if (isNaN(parsedUserId)) return [];
             const { data, error } = await client
                 .from('help_requests')
                 .select('*')
-                .eq('user_id', userId)
+                .eq('user_id', parsedUserId)
                 .order('created_at', { ascending: false });
             if (error) {
                 console.error("Error fetching help requests for user from Supabase:", error);
@@ -147,8 +149,9 @@
 
         createHelpRequest: async function (reqData) {
             if (!client) return null;
+            const parsedUserId = parseInt(reqData.user_id);
             const { data, error } = await client.from('help_requests').insert([{
-                user_id: reqData.user_id,
+                user_id: parsedUserId,
                 request_type: reqData.request_type,
                 description: reqData.description,
                 status: reqData.status || 'Pending'
@@ -163,10 +166,11 @@
 
         updateHelpRequestStatus: async function (id, status) {
             if (!client) return null;
+            const parsedId = parseInt(id);
             const { data, error } = await client
                 .from('help_requests')
                 .update({ status: status })
-                .eq('id', id)
+                .eq('id', parsedId)
                 .select().single();
 
             if (error) {
@@ -178,7 +182,8 @@
 
         deleteHelpRequest: async function (id) {
             if (!client) return null;
-            const { error } = await client.from('help_requests').delete().eq('id', id);
+            const parsedId = parseInt(id);
+            const { error } = await client.from('help_requests').delete().eq('id', parsedId);
             if (error) {
                 console.error("Error deleting help request from Supabase:", error);
                 throw error;

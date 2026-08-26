@@ -170,7 +170,7 @@ function getCurrentSession() {
 
 function startSession(user, role) {
     const session = {
-        id: user.id || 'admin',
+        id: (user.id !== undefined && user.id !== null) ? user.id : 'admin',
         name: user.full_name,
         email: user.email || '',
         username: user.username || '',
@@ -699,16 +699,18 @@ async function renderUserRequests(userId) {
 
     if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
         try {
-            if (typeof userId === 'number') {
-                userRequests = await window.SupabaseDB.getHelpRequestsByUserId(userId) || [];
+            let parsedId = parseInt(userId);
+            if (isNaN(parsedId) && session.email) {
+                const dbUser = await window.SupabaseDB.getUserByEmail(session.email);
+                if (dbUser) {
+                    parsedId = dbUser.id;
+                    session.id = dbUser.id;
+                    localStorage.setItem('dada_dadi_session', JSON.stringify(session));
+                }
             }
-            if (!userRequests || userRequests.length === 0) {
-                // Fetch all and match by email or name if ID differed
-                const allReqs = await window.SupabaseDB.getHelpRequests() || [];
-                userRequests = allReqs.filter(r => 
-                    String(r.user_id) === String(userId) ||
-                    (session.email && r.user_email && r.user_email.toLowerCase() === session.email.toLowerCase())
-                );
+
+            if (!isNaN(parsedId)) {
+                userRequests = await window.SupabaseDB.getHelpRequestsByUserId(parsedId) || [];
             }
         } catch (err) {
             console.error("Error fetching requests from Supabase:", err);
@@ -808,11 +810,14 @@ function initRequestHelpLogic() {
 
                 if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
                     try {
-                        let userId = currentSess.id;
-                        // If session ID is not a numeric integer, fetch user by email
-                        if (typeof userId !== 'number') {
-                            const dbUser = await window.SupabaseDB.getUserByEmail(currentSess.email);
-                            if (dbUser) userId = dbUser.id;
+                        let userId = parseInt(currentSess.id);
+                        if (isNaN(userId)) {
+                            const dbUser = await window.SupabaseDB.getUserByEmail(currentSess.email || 'ramesh@email.com');
+                            if (dbUser) {
+                                userId = dbUser.id;
+                                currentSess.id = dbUser.id;
+                                localStorage.setItem('dada_dadi_session', JSON.stringify(currentSess));
+                            }
                         }
 
                         await window.SupabaseDB.createHelpRequest({
@@ -826,6 +831,8 @@ function initRequestHelpLogic() {
                         return;
                     } catch (err) {
                         console.error("Supabase create help request error:", err);
+                        showToast("Error submitting request: " + err.message, "error");
+                        return;
                     }
                 }
 
