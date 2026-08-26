@@ -10,7 +10,7 @@
     // 1. Supabase Project Configuration
     // Replace these credentials with your actual project values from https://supabase.com/dashboard/project/_/settings/api
     const SUPABASE_URL = window.SUPABASE_URL || "https://deogpymrakboaohhlffy.supabase.co";
-    const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvdXItcHJvamVjdC1pZCI7InJvbGUiOiJhbm9uIiwiaWF0IjoxNjAwMDAwMDAwLCJleHAiOjE5MDAwMDAwMDB9.placeholderKey";
+    const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "sb_publishable_YRACj6yu3CjBvjZzFwTtdA_txFPAnZ8";
 
     // 2. Check if valid credentials are supplied
     const isConfigured = function () {
