@@ -1,12 +1,11 @@
 /*
 ========================================================================
-   DIGITAL DADA DADI HELP MANAGEMENT DESK - SIMULATED FRONTEND LOGIC
-   Uses localStorage to simulate a database for a fully workable website.
+   DIGITAL DADA DADI HELP MANAGEMENT DESK - FRONTEND LOGIC & SUPABASE INTEGRATION
 ========================================================================
 */
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialize Mock Database
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Initialize Mock Database fallback if offline / unconfigured
     initMockDatabase();
 
     // 2. Accessibility Sizing Controls
@@ -33,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // C. Senior Citizen Dashboard
     if (pageName === 'dashboard' || document.getElementById('profileEditForm') || document.getElementById('requestsTableBody')) {
-        initUserDashboardLogic();
+        await initUserDashboardLogic();
     }
     // D. Help Request Form
     if (pageName === 'request_help' || document.getElementById('helpRequestForm')) {
@@ -45,20 +44,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // F. Admin Dashboard
     if (pageName === 'admin_dashboard' || pageName === 'admin' || document.getElementById('metric_total_seniors')) {
-        initAdminDashboardLogic();
+        await initAdminDashboardLogic();
     }
     // G. Admin Users
     if (pageName === 'admin_users' || document.getElementById('adminUsersTableBody') || document.getElementById('admin_user_search')) {
-        initAdminUsersLogic();
+        await initAdminUsersLogic();
     }
     // H. Admin Requests
     if (pageName === 'admin_requests' || document.getElementById('adminRequestsTableBody') || document.getElementById('admin_request_search')) {
-        initAdminRequestsLogic();
+        await initAdminRequestsLogic();
     }
 });
 
 /* ---------------------------------------------------------
-   1. MOCK DATABASE INITIALIZATION (localStorage)
+   1. MOCK DATABASE FALLBACK (localStorage)
 ------------------------------------------------------------ */
 function initMockDatabase() {
     // Seed default users if empty
@@ -99,26 +98,6 @@ function initMockDatabase() {
             }
         ];
         localStorage.setItem('dada_dadi_users', JSON.stringify(defaultUsers));
-    } else {
-        const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
-        const kritiIndex = users.findIndex(u => u.email.toLowerCase() === 'kritipatil7@gmail.com' || u.full_name.toLowerCase().includes('kriti'));
-        if (kritiIndex !== -1) {
-            users[kritiIndex].password = "kriti123";
-            localStorage.setItem('dada_dadi_users', JSON.stringify(users));
-        } else {
-            users.push({
-                id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 3,
-                full_name: "kriti patil",
-                age: 65,
-                gender: "Female",
-                mobile_number: "7845784578",
-                address: "Pune",
-                email: "kritipatil7@gmail.com",
-                password: "kriti123",
-                created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString()
-            });
-            localStorage.setItem('dada_dadi_users', JSON.stringify(users));
-        }
     }
 
     // Seed default requests matching reference screenshot
@@ -166,69 +145,6 @@ function initMockDatabase() {
             }
         ];
         localStorage.setItem('dada_dadi_requests', JSON.stringify(defaultRequests));
-    } else {
-        const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
-        const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
-        const kritiUser = users.find(u => u.email.toLowerCase() === 'kritipatil7@gmail.com' || u.full_name.toLowerCase().includes('kriti'));
-        const rameshUser = users.find(u => u.email.toLowerCase() === 'ramesh@email.com' || u.full_name.toLowerCase().includes('ramesh'));
-        const savitriUser = users.find(u => u.email.toLowerCase() === 'savitri@email.com' || u.full_name.toLowerCase().includes('savitri'));
-        
-        const kritiId = kritiUser ? kritiUser.id : 3;
-        const rameshId = rameshUser ? rameshUser.id : 1;
-        const savitriId = savitriUser ? savitriUser.id : 2;
-
-        // Ensure reference requests exist for Kriti Patil
-        if (!requests.some(r => r.description === "I want medicines to help me" || r.description.includes("medicines to help me"))) {
-            requests.unshift({
-                id: requests.length > 0 ? Math.max(...requests.map(r => r.id)) + 1 : 101,
-                user_id: kritiId,
-                user_email: "kritipatil7@gmail.com",
-                user_name: "kriti patil",
-                request_type: "Medical",
-                description: "I want medicines to help me",
-                status: "Completed",
-                created_at: "2026-08-10T18:46:00.000Z"
-            });
-        }
-        if (!requests.some(r => r.description === "I need technical support of smartphone" || r.description.includes("technical support of smartphone"))) {
-            requests.unshift({
-                id: requests.length > 0 ? Math.max(...requests.map(r => r.id)) + 1 : 102,
-                user_id: kritiId,
-                user_email: "kritipatil7@gmail.com",
-                user_name: "kriti patil",
-                request_type: "Technical Help",
-                description: "I need technical support of smartphone",
-                status: "Completed",
-                created_at: "2026-08-08T01:02:00.000Z"
-            });
-        }
-        // Ensure reference request exists for Ramesh Kapoor
-        if (!requests.some(r => r.user_email === "ramesh@email.com" || (r.user_id && String(r.user_id) === String(rameshId)))) {
-            requests.push({
-                id: requests.length > 0 ? Math.max(...requests.map(r => r.id)) + 1 : 103,
-                user_id: rameshId,
-                user_email: "ramesh@email.com",
-                user_name: "Ramesh Kapoor",
-                request_type: "Grocery",
-                description: "Need 2kg potatoes, 1kg sugar and a packet of tea delivered. Prefer morning delivery.",
-                status: "Pending",
-                created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString()
-            });
-        }
-        // Ensure reference request exists for Savitri Devi
-        if (!requests.some(r => r.user_email === "savitri@email.com" || (r.user_id && String(r.user_id) === String(savitriId)))) {
-            requests.push({
-                id: requests.length > 0 ? Math.max(...requests.map(r => r.id)) + 1 : 104,
-                user_id: savitriId,
-                user_email: "savitri@email.com",
-                user_name: "Savitri Devi",
-                request_type: "Medical",
-                description: "Need escort to Eye Hospital checkup tomorrow morning. Need help in booking taxi.",
-                status: "Completed",
-                created_at: new Date(Date.now() - 2*24*60*60*1000).toISOString()
-            });
-        }
-        localStorage.setItem('dada_dadi_requests', JSON.stringify(requests));
     }
 
     // Seed default contact messages if empty
@@ -348,7 +264,6 @@ function renderDynamicNavigation() {
     const session = getCurrentSession();
     let navHtml = '<ul>';
 
-    // Logo adjustments
     const logo = document.querySelector('.logo');
 
     if (session && session.role === 'admin') {
@@ -373,7 +288,7 @@ function renderDynamicNavigation() {
             <li><a href="about.html"><i class="fa-solid fa-circle-info"></i> About Us</a></li>
             <li><a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a></li>
             <li class="nav-user-badge">
-                <span class="badge"><i class="fa-solid fa-circle-user"></i> Namaste, ${session.name.split(' ')[0]}</span>
+                <span class="badge"><i class="fa-solid fa-circle-user"></i> Namaste, ${session.name ? session.name.split(' ')[0] : 'Senior'}</span>
             </li>
             <li><button onclick="destroySession()" class="btn btn-outline-nav" style="padding:8px 16px; font-weight:700; cursor:pointer;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></li>
         `;
@@ -446,7 +361,7 @@ function showToast(message, type = 'info') {
 }
 
 /* ---------------------------------------------------------
-   7. PAGE-SPECIFIC SIMULATION CONTROLLERS
+   7. PAGE-SPECIFIC SUPABASE & FRONTEND CONTROLLERS
 ------------------------------------------------------------ */
 
 // A. LOGIN LOGIC
@@ -467,7 +382,6 @@ function initLoginTabs() {
         });
     });
 
-    // Support URL query parameter ?tab=admin or hash #admin
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('tab') === 'admin' || window.location.hash === '#admin') {
         const adminTab = document.querySelector('.login-tabs .tab-btn[data-tab="adminLogin"]');
@@ -482,7 +396,6 @@ function initLoginTabs() {
 }
 
 function initLoginLogic() {
-    // Check if registered URL parameter is present to show notice
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('registered') === 'true') {
         const regAlert = document.getElementById('regSuccessAlert');
@@ -492,11 +405,29 @@ function initLoginLogic() {
     // Senior User Login Form Submit
     const userForm = document.getElementById('userLoginForm');
     if (userForm) {
-        userForm.addEventListener('submit', (e) => {
+        userForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('usr_email').value.trim();
             const password = document.getElementById('usr_password').value;
 
+            if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+                try {
+                    const matchedUser = await window.SupabaseDB.getUserByEmail(email);
+
+                    if (matchedUser && matchedUser.password === password) {
+                        startSession(matchedUser, 'user');
+                        showToast(`Namaste ${matchedUser.full_name}! Logging in...`, "success");
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 400);
+                        return;
+                    }
+                } catch (err) {
+                    console.error("Supabase user login error:", err);
+                }
+            }
+
+            // Fallback to localStorage seed check
             const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
             const matchedUser = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
 
@@ -507,7 +438,7 @@ function initLoginLogic() {
                     window.location.href = 'dashboard.html';
                 }, 400);
             } else {
-                showToast("Invalid credentials. Try: ramesh@email.com / password123", "error");
+                showToast("Invalid credentials. Try demo account: ramesh@email.com / password123", "error");
             }
         });
     }
@@ -515,7 +446,7 @@ function initLoginLogic() {
     // Admin Login Form Submit
     const adminForm = document.getElementById('adminLoginForm');
     if (adminForm) {
-        adminForm.addEventListener('submit', (e) => {
+        adminForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const usernameInput = document.getElementById('adm_username');
             const passwordInput = document.getElementById('adm_password');
@@ -524,8 +455,30 @@ function initLoginLogic() {
             const username = usernameInput.value.trim();
             const password = passwordInput.value;
 
+            if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+                try {
+                    const matchedAdmin = await window.SupabaseDB.getAdminByUsername(username);
+                    if (matchedAdmin && matchedAdmin.password === password) {
+                        const adminSession = {
+                            id: matchedAdmin.id,
+                            full_name: matchedAdmin.full_name,
+                            username: matchedAdmin.username
+                        };
+                        startSession(adminSession, 'admin');
+                        showToast("Admin login successful! Redirecting to Admin Desk...", "success");
+                        setTimeout(() => {
+                            window.location.href = 'admin_dashboard.html';
+                        }, 400);
+                        return;
+                    }
+                } catch (err) {
+                    console.error("Supabase admin login error:", err);
+                }
+            }
+
+            // Default Admin check
             if (username.toLowerCase() === 'admin' && password === 'adminpassword123') {
-                const adminUser = { full_name: "Desk Administrator", username: "admin" };
+                const adminUser = { id: 1, full_name: "Desk Administrator", username: "admin" };
                 startSession(adminUser, 'admin');
                 showToast("Admin login successful! Redirecting to Admin Desk...", "success");
                 setTimeout(() => {
@@ -542,7 +495,7 @@ function initLoginLogic() {
 function initRegisterLogic() {
     const regForm = document.getElementById('registerForm');
     if (regForm) {
-        regForm.addEventListener('submit', (e) => {
+        regForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const full_name = document.getElementById('reg_name').value.trim();
@@ -553,7 +506,32 @@ function initRegisterLogic() {
             const email = document.getElementById('reg_email').value.trim();
             const password = document.getElementById('reg_password').value;
 
-            // Form validations already running client side, let's append database simulated entry
+            if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+                try {
+                    const existingUser = await window.SupabaseDB.getUserByEmail(email);
+                    if (existingUser) {
+                        showToast("This email is already registered! Please use another.", "error");
+                        return;
+                    }
+
+                    const newSupabaseUser = await window.SupabaseDB.createUser({
+                        full_name, age, gender, mobile_number: mobile, address, email, password
+                    });
+
+                    if (newSupabaseUser) {
+                        showToast("Registration successful! Redirecting to login...", "success");
+                        setTimeout(() => {
+                            window.location.href = 'login.html?registered=true';
+                        }, 500);
+                        return;
+                    }
+                } catch (err) {
+                    showToast("Error registering user: " + err.message, "error");
+                    return;
+                }
+            }
+
+            // Fallback to localStorage if Supabase unconfigured
             const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
             if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
                 showToast("This email is already registered! Please use another.", "error");
@@ -562,13 +540,7 @@ function initRegisterLogic() {
 
             const newUser = {
                 id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
-                full_name,
-                age,
-                gender,
-                mobile_number: mobile,
-                address,
-                email,
-                password,
+                full_name, age, gender, mobile_number: mobile, address, email, password,
                 created_at: new Date().toISOString()
             };
 
@@ -584,21 +556,29 @@ function initRegisterLogic() {
 function initContactLogic() {
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
+        contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('con_name').value.trim();
             const email = document.getElementById('con_email').value.trim();
             const message = document.getElementById('con_message').value.trim();
 
+            if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+                try {
+                    await window.SupabaseDB.createContactMessage({ name, email, message });
+                    showToast("Pranam! We have saved your message in Supabase and will review it soon.", "success");
+                    contactForm.reset();
+                    return;
+                } catch (err) {
+                    console.error("Supabase contact message error:", err);
+                }
+            }
+
+            // Fallback to localStorage
             const messages = JSON.parse(localStorage.getItem('dada_dadi_messages') || '[]');
             const newMsg = {
                 id: messages.length > 0 ? Math.max(...messages.map(m => m.id)) + 1 : 1,
-                name,
-                email,
-                message,
-                created_at: new Date().toISOString()
+                name, email, message, created_at: new Date().toISOString()
             };
-
             messages.push(newMsg);
             localStorage.setItem('dada_dadi_messages', JSON.stringify(messages));
 
@@ -609,7 +589,7 @@ function initContactLogic() {
 }
 
 // D. SENIOR CITIZEN USER DASHBOARD LOGIC
-function initUserDashboardLogic() {
+async function initUserDashboardLogic() {
     const isPhp = window.location.pathname.toLowerCase().endsWith('.php');
     let session = getCurrentSession();
 
@@ -620,7 +600,6 @@ function initUserDashboardLogic() {
     }
 
     if (session && session.role === 'user') {
-        // Render alerts if returning from help request submission
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('request_created') === 'true') {
             const successAlert = document.getElementById('dashboardSuccessAlert');
@@ -660,13 +639,13 @@ function initUserDashboardLogic() {
         const profAddress = document.getElementById('prof_address');
         if (profAddress && session.address) profAddress.value = session.address;
 
-        // Render User Requests
-        renderUserRequests(session.id);
+        // Render User Requests from Supabase
+        await renderUserRequests(session.id);
 
         // Profile Save Form Submit handler
         const profileForm = document.getElementById('profileEditForm');
         if (profileForm) {
-            profileForm.addEventListener('submit', (e) => {
+            profileForm.addEventListener('submit', async (e) => {
                 if (!isPhp) {
                     e.preventDefault();
                     const name = document.getElementById('prof_name').value.trim();
@@ -675,62 +654,80 @@ function initUserDashboardLogic() {
                     const mobile = document.getElementById('prof_mobile').value.trim();
                     const address = document.getElementById('prof_address').value.trim();
 
-                    // Update user in users list
-                    const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
-                    const idx = users.findIndex(u => u.id === session.id);
-                    if (idx !== -1) {
-                        users[idx].full_name = name;
-                        users[idx].age = age;
-                        users[idx].gender = gender;
-                        users[idx].mobile_number = mobile;
-                        users[idx].address = address;
-                        localStorage.setItem('dada_dadi_users', JSON.stringify(users));
-
-                        // Save new session values
-                        session.name = name;
-                        session.age = age;
-                        session.gender = gender;
-                        session.mobile = mobile;
-                        session.address = address;
-                        localStorage.setItem('dada_dadi_session', JSON.stringify(session));
-
-                        showToast("Your profile details updated successfully!", "success");
-                        toggleProfileEditForm();
-                        
-                        // Refresh dashboard text
-                        initUserDashboardLogic();
-                        renderDynamicNavigation();
+                    if (window.SupabaseDB && window.SupabaseDB.isConfigured() && typeof session.id === 'number') {
+                        try {
+                            await window.SupabaseDB.updateUser(session.id, {
+                                full_name: name, age, gender, mobile_number: mobile, address, email: session.email
+                            });
+                        } catch (err) {
+                            console.error("Supabase user update error:", err);
+                        }
                     }
+
+                    // Save new session values
+                    session.name = name;
+                    session.age = age;
+                    session.gender = gender;
+                    session.mobile = mobile;
+                    session.address = address;
+                    localStorage.setItem('dada_dadi_session', JSON.stringify(session));
+
+                    showToast("Your profile details updated successfully!", "success");
+                    toggleProfileEditForm();
+                    
+                    await initUserDashboardLogic();
+                    renderDynamicNavigation();
                 }
             });
         }
     }
 }
 
-function renderUserRequests(userId) {
+async function renderUserRequests(userId) {
     const tableBody = document.getElementById('requestsTableBody');
     const emptyState = document.getElementById('emptyRequestsState');
     if (!tableBody) return;
 
     const isPhp = window.location.pathname.toLowerCase().endsWith('.php');
     const existingRows = tableBody.querySelectorAll('tr');
-    // If PHP server rendered rows into tbody from MySQL database, do not wipe them
     if (isPhp && existingRows.length > 0 && existingRows[0].children.length > 1 && existingRows[0].textContent.trim().length > 0) {
         return;
     }
 
     const session = getCurrentSession() || {};
-    const allRequests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
-    const userRequests = allRequests.filter(r => 
-        String(r.user_id) === String(userId) ||
-        (r.user_id && String(r.user_id) === String(session.id)) ||
-        (r.user_email && session.email && r.user_email.toLowerCase() === session.email.toLowerCase()) ||
-        (r.user_name && session.name && r.user_name.toLowerCase() === session.name.toLowerCase())
-    ).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    let userRequests = [];
+
+    if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+        try {
+            if (typeof userId === 'number') {
+                userRequests = await window.SupabaseDB.getHelpRequestsByUserId(userId) || [];
+            }
+            if (!userRequests || userRequests.length === 0) {
+                // Fetch all and match by email or name if ID differed
+                const allReqs = await window.SupabaseDB.getHelpRequests() || [];
+                userRequests = allReqs.filter(r => 
+                    String(r.user_id) === String(userId) ||
+                    (session.email && r.user_email && r.user_email.toLowerCase() === session.email.toLowerCase())
+                );
+            }
+        } catch (err) {
+            console.error("Error fetching requests from Supabase:", err);
+        }
+    }
+
+    if (!userRequests || userRequests.length === 0) {
+        const allRequests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
+        userRequests = allRequests.filter(r => 
+            String(r.user_id) === String(userId) ||
+            (r.user_id && String(r.user_id) === String(session.id)) ||
+            (r.user_email && session.email && r.user_email.toLowerCase() === session.email.toLowerCase()) ||
+            (r.user_name && session.name && r.user_name.toLowerCase() === session.name.toLowerCase())
+        ).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    }
 
     const tableResponsive = tableBody.closest('.table-responsive');
 
-    if (userRequests.length === 0) {
+    if (!userRequests || userRequests.length === 0) {
         if (emptyState) emptyState.style.display = 'block';
         if (tableResponsive) tableResponsive.style.display = 'none';
     } else {
@@ -801,13 +798,38 @@ function initRequestHelpLogic() {
 
     const helpForm = document.getElementById('helpRequestForm');
     if (helpForm) {
-        helpForm.addEventListener('submit', (e) => {
+        helpForm.addEventListener('submit', async (e) => {
             if (!isPhp) {
                 e.preventDefault();
                 const type = document.getElementById('req_type').value;
                 const description = document.getElementById('req_description').value.trim();
 
                 const currentSess = getCurrentSession() || { id: 1, email: "ramesh@email.com", name: "Ramesh Kapoor" };
+
+                if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+                    try {
+                        let userId = currentSess.id;
+                        // If session ID is not a numeric integer, fetch user by email
+                        if (typeof userId !== 'number') {
+                            const dbUser = await window.SupabaseDB.getUserByEmail(currentSess.email);
+                            if (dbUser) userId = dbUser.id;
+                        }
+
+                        await window.SupabaseDB.createHelpRequest({
+                            user_id: userId || 1,
+                            request_type: type,
+                            description: description,
+                            status: 'Pending'
+                        });
+
+                        window.location.href = 'dashboard.html?request_created=true';
+                        return;
+                    } catch (err) {
+                        console.error("Supabase create help request error:", err);
+                    }
+                }
+
+                // Fallback to localStorage
                 const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
                 const newRequest = {
                     id: requests.length > 0 ? Math.max(...requests.map(r => r.id)) + 1 : 101,
@@ -830,22 +852,43 @@ function initRequestHelpLogic() {
 }
 
 // F. ADMIN DASHBOARD LOGIC
-function initAdminDashboardLogic() {
+async function initAdminDashboardLogic() {
     const session = getCurrentSession();
     if (!session || session.role !== 'admin') {
         window.location.href = 'login.html';
         return;
     }
 
-    const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
-    const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
-    const messages = JSON.parse(localStorage.getItem('dada_dadi_messages') || '[]');
+    let users = [];
+    let requests = [];
+    let messages = [];
+
+    if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+        try {
+            users = await window.SupabaseDB.getUsers() || [];
+            requests = await window.SupabaseDB.getHelpRequests() || [];
+            messages = await window.SupabaseDB.getContactMessages() || [];
+        } catch (err) {
+            console.error("Supabase admin dashboard error:", err);
+        }
+    }
+
+    if (users.length === 0) users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
+    if (requests.length === 0) requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
+    if (messages.length === 0) messages = JSON.parse(localStorage.getItem('dada_dadi_messages') || '[]');
 
     // Metric Counts
-    document.getElementById('metric_total_seniors').textContent = users.length;
-    document.getElementById('metric_pending').textContent = requests.filter(r => r.status === 'Pending').length;
-    document.getElementById('metric_inprogress').textContent = requests.filter(r => r.status === 'In Progress').length;
-    document.getElementById('metric_completed').textContent = requests.filter(r => r.status === 'Completed').length;
+    const totalSeniorsEl = document.getElementById('metric_total_seniors');
+    if (totalSeniorsEl) totalSeniorsEl.textContent = users.length;
+    
+    const pendingEl = document.getElementById('metric_pending');
+    if (pendingEl) pendingEl.textContent = requests.filter(r => r.status === 'Pending').length;
+    
+    const inProgressEl = document.getElementById('metric_inprogress');
+    if (inProgressEl) inProgressEl.textContent = requests.filter(r => r.status === 'In Progress').length;
+    
+    const completedEl = document.getElementById('metric_completed');
+    if (completedEl) completedEl.textContent = requests.filter(r => r.status === 'Completed').length;
 
     // Recent Requests (Latest 5)
     const recentRequestsBody = document.getElementById('recentRequestsTableBody');
@@ -856,7 +899,7 @@ function initAdminDashboardLogic() {
         } else {
             let html = '';
             sortedReqs.forEach(req => {
-                const requester = users.find(u => u.id === req.user_id) || { full_name: 'Unknown User', mobile_number: 'N/A' };
+                const requester = users.find(u => String(u.id) === String(req.user_id)) || { full_name: 'Unknown User', mobile_number: 'N/A' };
                 let badge_class = "pending";
                 if (req.status === 'In Progress') badge_class = "in-progress";
                 if (req.status === 'Completed') badge_class = "completed";
@@ -912,28 +955,25 @@ function initAdminDashboardLogic() {
 }
 
 // G. ADMIN USER MANAGEMENT LOGIC
-function initAdminUsersLogic() {
+async function initAdminUsersLogic() {
     const session = getCurrentSession();
     if (!session || session.role !== 'admin') {
         window.location.href = 'login.html';
         return;
     }
 
-    // Bind list
-    renderAdminUsersList();
+    await renderAdminUsersList();
 
-    // Bind Search Input typing
     const searchInp = document.getElementById('admin_user_search');
     if (searchInp) {
-        searchInp.addEventListener('input', () => {
-            renderAdminUsersList(searchInp.value.trim());
+        searchInp.addEventListener('input', async () => {
+            await renderAdminUsersList(searchInp.value.trim());
         });
     }
 
-    // Bind Edit form submit handler
     const editForm = document.getElementById('adminEditUserForm');
     if (editForm) {
-        editForm.addEventListener('submit', (e) => {
+        editForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = parseInt(document.getElementById('edt_user_id').value);
             const name = document.getElementById('edt_name').value.trim();
@@ -943,11 +983,26 @@ function initAdminUsersLogic() {
             const phone = document.getElementById('edt_phone').value.trim();
             const address = document.getElementById('edt_address').value.trim();
 
+            if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+                try {
+                    await window.SupabaseDB.updateUser(id, {
+                        full_name: name, email, age, gender, mobile_number: phone, address
+                    });
+                    showToast(`Profile of ${name} updated successfully in Supabase!`, "success");
+                    closeAdminEditForm();
+                    await renderAdminUsersList(searchInp ? searchInp.value.trim() : '');
+                    return;
+                } catch (err) {
+                    showToast("Error updating user: " + err.message, "error");
+                    return;
+                }
+            }
+
+            // Fallback to localStorage
             const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
             const idx = users.findIndex(u => u.id === id);
 
             if (idx !== -1) {
-                // Verify email unique
                 if (users.some(u => u.email.toLowerCase() === email.toLowerCase() && u.id !== id)) {
                     showToast("Email address is already in use by another senior profile.", "error");
                     return;
@@ -963,27 +1018,35 @@ function initAdminUsersLogic() {
                 localStorage.setItem('dada_dadi_users', JSON.stringify(users));
                 showToast(`Profile of ${name} updated successfully!`, "success");
                 
-                // Hide edit box, refresh user table
                 closeAdminEditForm();
-                renderAdminUsersList(searchInp ? searchInp.value.trim() : '');
+                await renderAdminUsersList(searchInp ? searchInp.value.trim() : '');
             }
         });
     }
 }
 
-function renderAdminUsersList(filterText = '') {
+async function renderAdminUsersList(filterText = '') {
     const tbody = document.getElementById('adminUsersTableBody');
     if (!tbody) return;
 
-    const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
+    let users = [];
+    if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+        try {
+            users = await window.SupabaseDB.getUsers() || [];
+        } catch (err) {
+            console.error("Supabase admin users list error:", err);
+        }
+    }
+
+    if (users.length === 0) users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
     let filtered = users;
 
     if (filterText) {
         const query = filterText.toLowerCase();
         filtered = users.filter(u => 
-            u.full_name.toLowerCase().includes(query) || 
-            u.email.toLowerCase().includes(query) || 
-            u.mobile_number.includes(query)
+            (u.full_name || '').toLowerCase().includes(query) || 
+            (u.email || '').toLowerCase().includes(query) || 
+            (u.mobile_number || '').includes(query)
         );
     }
 
@@ -1001,7 +1064,7 @@ function renderAdminUsersList(filterText = '') {
                         <i class="fa-solid fa-envelope" style="color: var(--color-text-light);"></i> ${u.email}<br>
                         <i class="fa-solid fa-phone" style="color: var(--color-text-light);"></i> ${u.mobile_number}
                     </td>
-                    <td style="font-size: 0.95rem; line-height: 1.4; max-width: 250px;">${u.address.replace(/\n/g, '<br>')}</td>
+                    <td style="font-size: 0.95rem; line-height: 1.4; max-width: 250px;">${(u.address || '').replace(/\n/g, '<br>')}</td>
                     <td style="font-size: 0.9rem;">${dateStr}</td>
                     <td>
                         <div style="display: flex; gap: 8px;">
@@ -1020,12 +1083,20 @@ function renderAdminUsersList(filterText = '') {
     }
 }
 
-function triggerAdminEditUser(userId) {
-    const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
-    const user = users.find(u => u.id === userId);
+async function triggerAdminEditUser(userId) {
+    let users = [];
+    if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+        try {
+            users = await window.SupabaseDB.getUsers() || [];
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    if (users.length === 0) users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
+    
+    const user = users.find(u => String(u.id) === String(userId));
     if (!user) return;
 
-    // Open edit box card, fill fields
     const container = document.getElementById('adminEditUserCard');
     if (container) {
         container.style.display = 'block';
@@ -1037,7 +1108,6 @@ function triggerAdminEditUser(userId) {
         document.getElementById('edt_phone').value = user.mobile_number;
         document.getElementById('edt_address').value = user.address;
         
-        // Scroll smoothly to edit form
         container.scrollIntoView({ behavior: 'smooth' });
     }
 }
@@ -1047,88 +1117,100 @@ function closeAdminEditForm() {
     if (container) container.style.display = 'none';
 }
 
-function triggerAdminDeleteUser(userId) {
-    const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
-    const user = users.find(u => u.id === userId);
-    if (!user) return;
+async function triggerAdminDeleteUser(userId) {
+    if (!confirm("Are you sure you want to permanently delete this senior profile? All associated help requests will also be deleted.")) {
+        return;
+    }
 
-    if (confirm(`Are you sure you want to permanently delete the profile of ${user.full_name}? All their submitted help requests will also be deleted.`)) {
-        // Delete User
-        const updatedUsers = users.filter(u => u.id !== userId);
-        localStorage.setItem('dada_dadi_users', JSON.stringify(updatedUsers));
-
-        // Delete associated requests
-        const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
-        const updatedRequests = requests.filter(r => r.user_id !== userId);
-        localStorage.setItem('dada_dadi_requests', JSON.stringify(updatedRequests));
-
-        showToast(`Profile of ${user.full_name} deleted successfully.`, "success");
-        renderAdminUsersList(document.getElementById('admin_user_search')?.value.trim());
-        
-        // If edit screen is showing deleted user, close it
-        const editIdVal = document.getElementById('edt_user_id')?.value;
-        if (editIdVal && parseInt(editIdVal) === userId) {
-            closeAdminEditForm();
+    if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+        try {
+            await window.SupabaseDB.deleteUser(userId);
+            showToast("Senior citizen profile deleted successfully from Supabase.", "success");
+            await renderAdminUsersList(document.getElementById('admin_user_search')?.value.trim());
+            return;
+        } catch (err) {
+            showToast("Error deleting user: " + err.message, "error");
+            return;
         }
     }
+
+    // Fallback to localStorage
+    const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
+    const user = users.find(u => String(u.id) === String(userId));
+    if (!user) return;
+
+    const updatedUsers = users.filter(u => String(u.id) !== String(userId));
+    localStorage.setItem('dada_dadi_users', JSON.stringify(updatedUsers));
+
+    const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
+    const updatedRequests = requests.filter(r => String(r.user_id) !== String(userId));
+    localStorage.setItem('dada_dadi_requests', JSON.stringify(updatedRequests));
+
+    showToast(`Profile of ${user.full_name} deleted successfully.`, "success");
+    await renderAdminUsersList(document.getElementById('admin_user_search')?.value.trim());
 }
 
 // H. ADMIN REQUESTS MANAGEMENT LOGIC
-function initAdminRequestsLogic() {
+async function initAdminRequestsLogic() {
     const session = getCurrentSession();
     if (!session || session.role !== 'admin') {
         window.location.href = 'login.html';
         return;
     }
 
-    // Check if redirect query parameter contains search text
     const urlParams = new URLSearchParams(window.location.search);
     const prefillSearch = urlParams.get('search');
     if (prefillSearch) {
         document.getElementById('search_inp').value = prefillSearch;
     }
 
-    // Render list
-    renderAdminRequestsList();
+    await renderAdminRequestsList();
 
-    // Event listeners for filters
     const searchInp = document.getElementById('search_inp');
     const statusFilter = document.getElementById('status_filter');
     const typeFilter = document.getElementById('type_filter');
 
-    const updateTrigger = () => {
-        renderAdminRequestsList(searchInp.value.trim(), statusFilter.value, typeFilter.value);
+    const updateTrigger = async () => {
+        await renderAdminRequestsList(searchInp.value.trim(), statusFilter.value, typeFilter.value);
     };
 
     searchInp.addEventListener('input', updateTrigger);
     statusFilter.addEventListener('change', updateTrigger);
     typeFilter.addEventListener('change', updateTrigger);
 
-    // Reset filters action
-    window.resetAdminRequestsFilters = () => {
+    window.resetAdminRequestsFilters = async () => {
         searchInp.value = '';
         statusFilter.value = '';
         typeFilter.value = '';
-        updateTrigger();
+        await updateTrigger();
     };
 
-    // Toggle Admin Create Request Card
-    window.toggleAdminCreateRequestCard = function() {
+    window.toggleAdminCreateRequestCard = async function() {
         const card = document.getElementById('adminCreateRequestCard');
         if (!card) return;
         if (card.style.display === 'none' || !card.style.display) {
             card.style.display = 'block';
-            populateAdminSeniorDropdown();
+            await populateAdminSeniorDropdown();
             card.scrollIntoView({ behavior: 'smooth' });
         } else {
             card.style.display = 'none';
         }
     };
 
-    function populateAdminSeniorDropdown() {
+    async function populateAdminSeniorDropdown() {
         const selectEl = document.getElementById('admin_req_user');
         if (!selectEl) return;
-        const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
+        
+        let users = [];
+        if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+            try {
+                users = await window.SupabaseDB.getUsers() || [];
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        if (users.length === 0) users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
+
         if (users.length === 0) {
             selectEl.innerHTML = '<option value="">No seniors registered</option>';
             return;
@@ -1140,10 +1222,9 @@ function initAdminRequestsLogic() {
         selectEl.innerHTML = html;
     }
 
-    // Admin Create Request Form Submit Handler
     const createReqForm = document.getElementById('adminCreateHelpRequestForm');
     if (createReqForm) {
-        createReqForm.addEventListener('submit', (e) => {
+        createReqForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const userId = document.getElementById('admin_req_user').value;
             const reqType = document.getElementById('admin_req_type').value;
@@ -1155,19 +1236,35 @@ function initAdminRequestsLogic() {
                 return;
             }
 
+            if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+                try {
+                    await window.SupabaseDB.createHelpRequest({
+                        user_id: parseInt(userId),
+                        request_type: reqType,
+                        description: reqDesc,
+                        status: reqStatus
+                    });
+                    showToast(`Help Request created successfully in Supabase!`, "success");
+                    createReqForm.reset();
+                    await window.toggleAdminCreateRequestCard();
+                    await renderAdminRequestsList();
+                    return;
+                } catch (err) {
+                    showToast("Error creating request: " + err.message, "error");
+                    return;
+                }
+            }
+
+            // Fallback to localStorage
             const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
             const matchedUser = users.find(u => String(u.id) === String(userId));
-            if (!matchedUser) {
-                showToast("Selected senior citizen profile not found.", "error");
-                return;
-            }
 
             const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
             const newRequest = {
                 id: requests.length > 0 ? Math.max(...requests.map(r => r.id)) + 1 : 101,
-                user_id: matchedUser.id,
-                user_email: matchedUser.email,
-                user_name: matchedUser.full_name,
+                user_id: matchedUser ? matchedUser.id : userId,
+                user_email: matchedUser ? matchedUser.email : '',
+                user_name: matchedUser ? matchedUser.full_name : '',
                 request_type: reqType,
                 description: reqDesc,
                 status: reqStatus,
@@ -1177,29 +1274,40 @@ function initAdminRequestsLogic() {
             requests.unshift(newRequest);
             localStorage.setItem('dada_dadi_requests', JSON.stringify(requests));
 
-            showToast(`Help Request created successfully for ${matchedUser.full_name}!`, "success");
+            showToast(`Help Request created successfully!`, "success");
             createReqForm.reset();
-            window.toggleAdminCreateRequestCard();
-            renderAdminRequestsList();
+            await window.toggleAdminCreateRequestCard();
+            await renderAdminRequestsList();
         });
     }
 }
 
-function renderAdminRequestsList(searchText = '', statusVal = '', typeVal = '') {
+async function renderAdminRequestsList(searchText = '', statusVal = '', typeVal = '') {
     const tbody = document.getElementById('adminRequestsTableBody');
     if (!tbody) return;
 
-    const users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
-    const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
+    let users = [];
+    let requests = [];
+
+    if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+        try {
+            users = await window.SupabaseDB.getUsers() || [];
+            requests = await window.SupabaseDB.getHelpRequests() || [];
+        } catch (err) {
+            console.error("Supabase admin requests list error:", err);
+        }
+    }
+
+    if (users.length === 0) users = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]');
+    if (requests.length === 0) requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
 
     let filtered = requests;
 
-    // Apply filters
     if (searchText) {
         const query = searchText.toLowerCase();
         filtered = filtered.filter(req => {
             const senior = users.find(u => String(u.id) === String(req.user_id)) || { full_name: '' };
-            return senior.full_name.toLowerCase().includes(query) || (req.description || '').toLowerCase().includes(query);
+            return (senior.full_name || '').toLowerCase().includes(query) || (req.description || '').toLowerCase().includes(query);
         });
     }
 
@@ -1211,11 +1319,10 @@ function renderAdminRequestsList(searchText = '', statusVal = '', typeVal = '') 
         filtered = filtered.filter(req => req.request_type === typeVal || (req.request_type || '').includes(typeVal));
     }
 
-    // Sort by latest first
     filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No service requests matches selected filters.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No service requests matched the selected filters.</td></tr>';
     } else {
         let html = '';
         filtered.forEach(req => {
@@ -1230,12 +1337,10 @@ function renderAdminRequestsList(searchText = '', statusVal = '', typeVal = '') 
             else if (reqType.includes("Tech")) icon = "fa-mobile-screen-button";
             else if (reqType.includes("Emergency")) icon = "fa-circle-exclamation";
 
-            // Status details
             let badge_class = "pending";
             if (req.status === 'In Progress') badge_class = "in-progress";
             if (req.status === 'Completed') badge_class = "completed";
 
-            // Emergency row highlight
             const isEmergencyHighlight = (req.request_type === 'Emergency' && req.status !== 'Completed') ? 
                 'style="background-color: #fff1f2; border-left: 5px solid var(--color-danger);"' : '';
 
@@ -1252,12 +1357,12 @@ function renderAdminRequestsList(searchText = '', statusVal = '', typeVal = '') 
                         <span style="font-size: 0.85rem; font-weight: 700; color: var(--color-accent-dark);">(Age: ${senior.age})</span><br>
                         <span style="font-size: 0.95rem; font-weight: 600;"><i class="fa-solid fa-phone"></i> ${senior.mobile_number}</span><br>
                         <span style="font-size: 0.85rem; color: var(--color-text-light); line-height: 1.3; display: block; max-width: 200px;">
-                            <i class="fa-solid fa-location-dot"></i> ${senior.address}
+                            <i class="fa-solid fa-location-dot"></i> ${(senior.address || '').replace(/\n/g, '<br>')}
                         </span>
                     </td>
                     <td style="font-size: 1rem; line-height: 1.5; max-width: 320px;">
                         <div style="background-color: var(--color-bg-light); padding: 12px; border-radius: var(--border-radius); border: 1px solid var(--color-border);">
-                            ${req.description.replace(/\n/g, '<br>')}
+                            ${(req.description || '').replace(/\n/g, '<br>')}
                         </div>
                     </td>
                     <td style="width: 180px;">
@@ -1284,37 +1389,69 @@ function renderAdminRequestsList(searchText = '', statusVal = '', typeVal = '') 
     }
 }
 
-function updateAdminRequestStatus(requestId, newStatus) {
+async function updateAdminRequestStatus(requestId, newStatus) {
+    if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+        try {
+            await window.SupabaseDB.updateHelpRequestStatus(requestId, newStatus);
+            showToast(`Request status updated to ${newStatus} in Supabase!`, "success");
+            await renderAdminRequestsList(
+                document.getElementById('search_inp')?.value.trim() || '',
+                document.getElementById('status_filter')?.value || '',
+                document.getElementById('type_filter')?.value || ''
+            );
+            return;
+        } catch (err) {
+            showToast("Error updating request status: " + err.message, "error");
+            return;
+        }
+    }
+
+    // Fallback to localStorage
     const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
-    const idx = requests.findIndex(r => r.id === requestId);
+    const idx = requests.findIndex(r => String(r.id) === String(requestId));
 
     if (idx !== -1) {
         requests[idx].status = newStatus;
         localStorage.setItem('dada_dadi_requests', JSON.stringify(requests));
         showToast(`Request status updated to ${newStatus} successfully!`, "success");
         
-        // Refresh requests list
-        renderAdminRequestsList(
-            document.getElementById('search_inp').value.trim(),
-            document.getElementById('status_filter').value,
-            document.getElementById('type_filter').value
+        await renderAdminRequestsList(
+            document.getElementById('search_inp')?.value.trim() || '',
+            document.getElementById('status_filter')?.value || '',
+            document.getElementById('type_filter')?.value || ''
         );
     }
 }
 
-function deleteAdminRequest(requestId) {
-    if (confirm("Are you sure you want to delete this service request?")) {
-        const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
-        const updated = requests.filter(r => r.id !== requestId);
-        localStorage.setItem('dada_dadi_requests', JSON.stringify(updated));
-        
-        showToast("Service request deleted successfully.", "success");
-        
-        // Refresh list
-        renderAdminRequestsList(
-            document.getElementById('search_inp').value.trim(),
-            document.getElementById('status_filter').value,
-            document.getElementById('type_filter').value
-        );
+async function deleteAdminRequest(requestId) {
+    if (!confirm("Are you sure you want to delete this service request?")) return;
+
+    if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
+        try {
+            await window.SupabaseDB.deleteHelpRequest(requestId);
+            showToast("Service request deleted from Supabase.", "success");
+            await renderAdminRequestsList(
+                document.getElementById('search_inp')?.value.trim() || '',
+                document.getElementById('status_filter')?.value || '',
+                document.getElementById('type_filter')?.value || ''
+            );
+            return;
+        } catch (err) {
+            showToast("Error deleting request: " + err.message, "error");
+            return;
+        }
     }
+
+    // Fallback to localStorage
+    const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
+    const updated = requests.filter(r => String(r.id) !== String(requestId));
+    localStorage.setItem('dada_dadi_requests', JSON.stringify(updated));
+    
+    showToast("Service request deleted successfully.", "success");
+    await renderAdminRequestsList(
+        document.getElementById('search_inp')?.value.trim() || '',
+        document.getElementById('status_filter')?.value || '',
+        document.getElementById('type_filter')?.value || ''
+    );
 }
+

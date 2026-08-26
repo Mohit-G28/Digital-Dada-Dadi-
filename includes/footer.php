@@ -52,6 +52,9 @@ if (strpos($_SERVER['REQUEST_URI'], '/admin/') !== false) {
         </div>
     </footer>
 
+    <!-- Supabase JS Client & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="<?php echo $base_path; ?>js/supabase-config.js"></script>
     <!-- Main JavaScript File -->
     <script src="<?php echo $base_path; ?>js/script.js"></script>
 </body>
