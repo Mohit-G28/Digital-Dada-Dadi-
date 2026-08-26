@@ -594,9 +594,8 @@ async function initUserDashboardLogic() {
     let session = getCurrentSession();
 
     if (!isPhp && (!session || session.role !== 'user')) {
-        const defaultUser = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]')[0] || { id: 1, full_name: "Ramesh Kapoor", age: 72, email: "ramesh@email.com", gender: "Male", mobile_number: "9876543210", address: "45, Seva Bhavan Road, Elder Care District, New Delhi" };
-        startSession(defaultUser, 'user');
-        session = getCurrentSession();
+        window.location.href = 'login.html';
+        return;
     }
 
     if (session && session.role === 'user') {
@@ -695,7 +694,7 @@ async function renderUserRequests(userId) {
     }
 
     const session = getCurrentSession() || {};
-    let userRequests = [];
+    let userRequests = null;
 
     if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
         try {
@@ -710,21 +709,25 @@ async function renderUserRequests(userId) {
             }
 
             if (!isNaN(parsedId)) {
-                userRequests = await window.SupabaseDB.getHelpRequestsByUserId(parsedId) || [];
+                userRequests = await window.SupabaseDB.getHelpRequestsByUserId(parsedId);
             }
         } catch (err) {
             console.error("Error fetching requests from Supabase:", err);
         }
     }
 
-    if (!userRequests || userRequests.length === 0) {
-        const allRequests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
-        userRequests = allRequests.filter(r => 
-            String(r.user_id) === String(userId) ||
-            (r.user_id && String(r.user_id) === String(session.id)) ||
-            (r.user_email && session.email && r.user_email.toLowerCase() === session.email.toLowerCase()) ||
-            (r.user_name && session.name && r.user_name.toLowerCase() === session.name.toLowerCase())
-        ).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    // Only fallback to localStorage if Supabase is NOT configured
+    if (userRequests === null) {
+        if (!window.SupabaseDB || !window.SupabaseDB.isConfigured()) {
+            const allRequests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
+            userRequests = allRequests.filter(r => 
+                String(r.user_id) === String(userId) ||
+                (r.user_id && String(r.user_id) === String(session.id)) ||
+                (r.user_email && session.email && r.user_email.toLowerCase() === session.email.toLowerCase())
+            ).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        } else {
+            userRequests = [];
+        }
     }
 
     const tableResponsive = tableBody.closest('.table-responsive');
@@ -732,6 +735,7 @@ async function renderUserRequests(userId) {
     if (!userRequests || userRequests.length === 0) {
         if (emptyState) emptyState.style.display = 'block';
         if (tableResponsive) tableResponsive.style.display = 'none';
+        tableBody.innerHTML = '';
     } else {
         if (emptyState) emptyState.style.display = 'none';
         if (tableResponsive) tableResponsive.style.display = 'block';
@@ -793,9 +797,8 @@ function initRequestHelpLogic() {
     let session = getCurrentSession();
 
     if (!isPhp && (!session || session.role !== 'user')) {
-        const defaultUser = JSON.parse(localStorage.getItem('dada_dadi_users') || '[]')[0] || { id: 1, full_name: "Ramesh Kapoor", age: 72, email: "ramesh@email.com", gender: "Male", mobile_number: "9876543210", address: "45, Seva Bhavan Road, Elder Care District, New Delhi" };
-        startSession(defaultUser, 'user');
-        session = getCurrentSession();
+        window.location.href = 'login.html';
+        return;
     }
 
     const helpForm = document.getElementById('helpRequestForm');
@@ -806,13 +809,17 @@ function initRequestHelpLogic() {
                 const type = document.getElementById('req_type').value;
                 const description = document.getElementById('req_description').value.trim();
 
-                const currentSess = getCurrentSession() || { id: 1, email: "ramesh@email.com", name: "Ramesh Kapoor" };
+                const currentSess = getCurrentSession();
+                if (!currentSess || currentSess.role !== 'user') {
+                    window.location.href = 'login.html';
+                    return;
+                }
 
                 if (window.SupabaseDB && window.SupabaseDB.isConfigured()) {
                     try {
                         let userId = parseInt(currentSess.id);
-                        if (isNaN(userId)) {
-                            const dbUser = await window.SupabaseDB.getUserByEmail(currentSess.email || 'ramesh@email.com');
+                        if (isNaN(userId) && currentSess.email) {
+                            const dbUser = await window.SupabaseDB.getUserByEmail(currentSess.email);
                             if (dbUser) {
                                 userId = dbUser.id;
                                 currentSess.id = dbUser.id;
@@ -820,8 +827,14 @@ function initRequestHelpLogic() {
                             }
                         }
 
+                        if (isNaN(userId)) {
+                            showToast("User session invalid. Please log in again.", "error");
+                            setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+                            return;
+                        }
+
                         await window.SupabaseDB.createHelpRequest({
-                            user_id: userId || 1,
+                            user_id: userId,
                             request_type: type,
                             description: description,
                             status: 'Pending'
@@ -836,7 +849,7 @@ function initRequestHelpLogic() {
                     }
                 }
 
-                // Fallback to localStorage
+                // Fallback to localStorage only if Supabase is unconfigured
                 const requests = JSON.parse(localStorage.getItem('dada_dadi_requests') || '[]');
                 const newRequest = {
                     id: requests.length > 0 ? Math.max(...requests.map(r => r.id)) + 1 : 101,
